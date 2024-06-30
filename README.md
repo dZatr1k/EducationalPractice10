@@ -34,38 +34,38 @@ for each w in M:
 ### Визуализация матрицы
 Матрица смежности до начала работы алгоритма будет выглядеть примерно следующим образом:
 
-!(матрица 1)[https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/matrix4.jpg]
+![матрица 1](https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/matrix4.jpg)
 
 На некотором шаге алгоритма матрица будет отображаться примерно следующим образом:
 
-!(матрица 2)[https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/matrix1.jpg]
+![матрица 2](https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/matrix1.jpg)
 
 (где условно красным обведена главная для этого шага вершина (ту, через которую смотрим можно ли пройти), а жёлтым обрабатываемая на данном шаге ячейка)
 
 После добавления очередного ребра матрица смежности будет выглядеть примерно следующим образом:
 
-!(матрица 3)[https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/matrix2.jpg]
+![матрица 3](https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/matrix2.jpg)
 
 (на каждом шаге вновь добавленное ребро будет отображаться в графе жёлтым цветом, а рёбра породившие его, через которые мы смогли пройти, - синим)
 
 На каждом из последующих шагов рёбра, которые были добавлены ранее в алгоритме, будут отмечаться в матрице смежности условно зелёным цветом. После работы алгоритма все добавленные рёбра в матрице будут выделены этим цветом:
 
-!(матрица 4)[https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/matrix3.jpg]
+![матрица 4](https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/matrix3.jpg)
 
 ### Визуализация графа
 Относительно матрицы смежности некоторого графа будет строиться его визуальное отображение, которое будет выглядеть примерно так:
 
-!(граф 1)[https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/graph1.png]
+![граф 1](https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/graph1.png)
 
 Во время работы алгоритма на каждой итерации в случае, если было добавлено новое ребро, оно будет выделено определённым цветом, а также будет выведено сообщение вида "добавлено ребро $V\to U$". Также будут выделены рёбра, из-за которых данное ребро появилось. Примерное отображение графа при добавлении нового ребра:
 
-!(граф 2)[https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/graph2.png]
+![граф 2](https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/graph2.png)
 
 (на каждом из шагов рёбра, которые были добавлены ранее в алгоритме, будут окрашиваться условно в жёлтый цвет, а рёбра, которые породили это ребро, будут окрашиваться условно в синий) 
 
 После работы алгоритма все добавленные рёбра будут выделены отдельным цветом, что поможет оценить работу алгоритма и посмотреть, как изменился граф:
 
-!(граф 3)[https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/graph3.png]
+![граф 3](https://github.com/dZatr1k/EducationalPractice10/blob/main/SpecsPictures/graph3.png)
 
 ### Дополнительные взаимодействия пользователя с интерфейсом
 Помимо изложенной информации о визуализации планируется, что пользователю на главном экране будут доступны кнопки вида:
