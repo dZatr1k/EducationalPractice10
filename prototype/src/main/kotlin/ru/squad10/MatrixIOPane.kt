@@ -11,6 +11,9 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.concurrent.ThreadLocalRandom
 
 class MatrixIOPane : AnchorPane() {
     private var dim = SimpleIntegerProperty(0)
@@ -53,8 +56,8 @@ class MatrixIOPane : AnchorPane() {
 
         dim.set(dim.get() + 1)
 
-        grid.add(Label(name), 0, dim.get() - 1 + 1)
-        grid.add(Label(name), dim.get() - 1 + 1, 0)
+        grid.add(Label(name), 0, dim.get())
+        grid.add(Label(name), dim.get(), 0)
 
         val j = dim.get() - 1
         for (i in 0 until dim.get()) {
@@ -94,6 +97,62 @@ class MatrixIOPane : AnchorPane() {
         dim.set(dim.get() - 1)
     }
 
+    private fun clearGraph() {
+        while (dim.get() != 0) {
+            removeElement()
+        }
+    }
+
+    private fun makeRandomGraph(size: Int, edgeNumber: Int = -1) {
+        val rand = ThreadLocalRandom.current()
+        clearGraph()
+
+        for (i in 0 until size) {
+            addElement()
+        }
+
+        var edgeCount = 0
+        val newEdges = mutableSetOf<Edge>()
+        for (i in vertexCache.values) {
+            for (j in vertexCache.values) {
+                if (i == j) continue
+                if (rand.nextBoolean()) {
+                    val newEdge = Edge(i, j)
+                    val fromIndex = i.name.first() - 'A'
+                    val toIndex = j.name.first() - 'A'
+                    checkboxes[fromIndex to toIndex]!!.isSelected = true
+                    newEdges += newEdge
+                    if (edgeNumber != -1) {
+                        edgeCount++
+                        if (edgeCount == edgeNumber) break
+                    }
+                }
+            }
+            if (edgeCount == edgeNumber) break
+        }
+    }
+
+    private fun makeGraphFromFile(path: Path) {
+        clearGraph()
+
+        val fileStrings = Files.readString(path).split('\n')
+
+        for (i in 0 until fileStrings.size) {
+            addElement()
+        }
+        for (i in 0 until fileStrings.size) {
+            for (j in 0 until fileStrings[i].length) {
+                if (i == j) continue
+                if (fileStrings[i][j] == '1') {
+                    val newEdge = Edge(vertexCache.get(i)!!, vertexCache.get(j)!!)
+                    checkboxes[i to j]!!.isSelected = true
+                }
+            }
+        }
+
+
+    }
+
     init {
         val buttonAddElement = Button("Добавить")
         val buttonRemoveElement = Button("Удалить")
@@ -129,6 +188,8 @@ class MatrixIOPane : AnchorPane() {
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
 
+        buttonGenerateGraph.setOnMouseClicked { makeRandomGraph(5) }
+
         grid.hgap = 16.0
         grid.vgap = 16.0
 
@@ -137,8 +198,10 @@ class MatrixIOPane : AnchorPane() {
 
         val toggleGroupHbox = HBox(toggleButtonVisModeManual, toggleButtonVisModelAuto)
         toggleGroupHbox.visibleProperty().bind(buttonCheckbox.selectedProperty())
-        visModelAutoPane.visibleProperty().bind(toggleButtonVisModelAuto.selectedProperty().and(buttonCheckbox.selectedProperty()))
-        visModeManualPane.visibleProperty().bind(toggleButtonVisModeManual.selectedProperty().and(buttonCheckbox.selectedProperty()))
+        visModelAutoPane.visibleProperty()
+            .bind(toggleButtonVisModelAuto.selectedProperty().and(buttonCheckbox.selectedProperty()))
+        visModeManualPane.visibleProperty()
+            .bind(toggleButtonVisModeManual.selectedProperty().and(buttonCheckbox.selectedProperty()))
         vbox.children.addAll(
             buttonAddElement,
             buttonRemoveElement,
