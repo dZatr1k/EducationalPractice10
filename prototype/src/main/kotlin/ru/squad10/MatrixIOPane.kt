@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
+import ru.squad10.services.WarshelAlgorithmService
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ThreadLocalRandom
@@ -149,8 +150,12 @@ class MatrixIOPane : AnchorPane() {
                 }
             }
         }
+    }
 
-
+    private fun startAlgorithm(){
+        val service = WarshelAlgorithmService()
+        val newGraph = service.compute(graphProperty.get())
+        graphProperty.set(newGraph)
     }
 
     init {
@@ -187,6 +192,7 @@ class MatrixIOPane : AnchorPane() {
 
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
+        buttonStart.setOnMouseClicked { startAlgorithm() }
 
         buttonGenerateGraph.setOnMouseClicked { makeRandomGraph(5) }
 
