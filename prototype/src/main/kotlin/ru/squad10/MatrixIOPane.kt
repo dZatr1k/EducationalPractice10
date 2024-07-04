@@ -5,12 +5,11 @@ import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.*
-import javafx.scene.layout.AnchorPane
-import javafx.scene.layout.GridPane
-import javafx.scene.layout.HBox
-import javafx.scene.layout.VBox
+import javafx.scene.layout.*
+import javafx.stage.FileChooser
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
+import ru.squad10.services.WarshelAlgorithmService
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ThreadLocalRandom
@@ -157,8 +156,20 @@ class MatrixIOPane : AnchorPane() {
                 }
             }
         }
+    }
 
+    private fun startAlgorithm(){
+        val service = WarshelAlgorithmService()
+        val newGraph = service.compute(graphProperty.get())
+        graphProperty.set(newGraph)
 
+        val vertexIndex = newGraph.vertices.withIndex().associate { it.value to it.index }
+
+        for (edge in newGraph.edges) {
+            val fromIndex = vertexIndex[edge.from] ?: -1
+            val toIndex = vertexIndex[edge.to] ?: -1
+            checkboxes[fromIndex to toIndex]!!.isSelected = true
+        }
     }
 
     init {
@@ -168,6 +179,13 @@ class MatrixIOPane : AnchorPane() {
         val buttonGenerateGraph = Button("Рандом")
         val buttonCheckbox = CheckBox("Показ работы")
         val buttonStart = Button("Запуск")
+
+        val paramVertexForRandomMatrix = TextField().apply {
+            promptText = "Кол-во вершин"
+        }
+        val paramEdgeForRandomMatrix = TextField().apply {
+            promptText = "Кол-во ребер"
+        }
 
         val toggleGroupVisMode = ToggleGroup()
         val toggleButtonVisModeManual = ToggleButton("Ручной")
@@ -205,22 +223,48 @@ class MatrixIOPane : AnchorPane() {
 
         val toggleGroupHbox = HBox(toggleButtonVisModeManual, toggleButtonVisModelAuto)
         toggleGroupHbox.visibleProperty().bind(buttonCheckbox.selectedProperty())
-        visModelAutoPane.visibleProperty()
-            .bind(toggleButtonVisModelAuto.selectedProperty().and(buttonCheckbox.selectedProperty()))
-        visModeManualPane.visibleProperty()
-            .bind(toggleButtonVisModeManual.selectedProperty().and(buttonCheckbox.selectedProperty()))
+        visModelAutoPane.visibleProperty().bind(toggleButtonVisModelAuto.selectedProperty().and(buttonCheckbox.selectedProperty()))
+        visModeManualPane.visibleProperty().bind(toggleButtonVisModeManual.selectedProperty().and(buttonCheckbox.selectedProperty()))
+        val visModesStackPane = StackPane(visModelAutoPane, visModeManualPane)
+
+        val loadGraphFileChooser = FileChooser()
+        loadGraphFileChooser.title = "Выберете файл"
+        loadGraphFileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Text Files", "*.txt"))
+
+        buttonLoadGraph.setOnMouseClicked {
+            var file = loadGraphFileChooser.showOpenDialog(AlgoApp.stage)
+            if (file != null){
+                println("Выбран файл: $file")
+                makeGraphFromFile(file.toPath())
+            }
+
+        }
+
+        paramVertexForRandomMatrix.maxWidth = 100.0
+        paramEdgeForRandomMatrix.maxWidth = 100.0
+        val generateGraphHBox = HBox(10.0, buttonGenerateGraph, paramVertexForRandomMatrix, paramEdgeForRandomMatrix)
+        buttonGenerateGraph.setOnMouseClicked{
+            var vertexCount = paramVertexForRandomMatrix.text.toInt()
+            var edgeCount = paramEdgeForRandomMatrix.text.toInt()
+
+            //if (edgeCount > vertexCount*(vertexCount-1)) edgeCount = vertexCount*(vertexCount-1)
+            makeRandomGraph(vertexCount, edgeCount)
+        }
+
         vbox.children.addAll(
             buttonAddElement,
             buttonRemoveElement,
             buttonLoadGraph,
-            buttonGenerateGraph,
+            generateGraphHBox,
             buttonCheckbox,
             toggleGroupHbox,
-            visModelAutoPane,
-            visModeManualPane,
+            visModesStackPane,
             buttonStart,
             grid,
         )
+
+        visModesStackPane.managedProperty().bind(buttonCheckbox.selectedProperty())
+
         children.add(vbox)
         setLeftAnchor(vbox, 0.0)
         setRightAnchor(vbox, 0.0)

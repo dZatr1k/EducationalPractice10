@@ -6,7 +6,13 @@ import javafx.scene.control.SplitPane
 import javafx.stage.Stage
 
 class AlgoApp : Application() {
+    companion object {
+        lateinit var stage: Stage
+            private set
+    }
+
     override fun start(primaryStage: Stage) {
+        stage = primaryStage
 
         val matrixIOPane = MatrixIOPane()
         val graphVisPane = GraphVisPane(matrixIOPane.readonlyGraphProperty)
