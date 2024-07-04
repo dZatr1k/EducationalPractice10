@@ -5,6 +5,6 @@ data class Edge (
     val to: Vertex
 ) {
     override fun toString(): String {
-        return ""
+        return "$from->$to"
     }
 }

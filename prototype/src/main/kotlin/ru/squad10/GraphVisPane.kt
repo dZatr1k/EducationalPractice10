@@ -13,7 +13,7 @@ import ru.squad10.dto.Vertex
 
 class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : AnchorPane() {
     private val diGraph = DigraphEdgeList<Vertex, Edge>()
-    private val graphView = SmartGraphPanel(diGraph, SmartCircularSortedPlacementStrategy(), ForceDirectedSpringGravityLayoutStrategy())
+    private val graphView = SmartGraphPanel(diGraph, ForceDirectedSpringGravityLayoutStrategy())
 
     val vertexCache = mutableMapOf<Vertex, com.brunomnsilva.smartgraph.graph.Vertex<Vertex>>()
     val edgeCache = mutableMapOf<Edge, com.brunomnsilva.smartgraph.graph.Edge<Edge, Vertex>>()
