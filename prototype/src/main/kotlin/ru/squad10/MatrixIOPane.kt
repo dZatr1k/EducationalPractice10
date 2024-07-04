@@ -13,6 +13,7 @@ import ru.squad10.services.WarshelAlgorithmService
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.math.min
 
 class MatrixIOPane : AnchorPane() {
     private var dim = SimpleIntegerProperty(0)
@@ -122,39 +123,47 @@ class MatrixIOPane : AnchorPane() {
                 }
             }
         } else {
-            var edgeCount = 0
-            val maxNumberOfEdges = size * size
-            while (edgeCount <= edgeNumber || edgeCount <= maxNumberOfEdges - size) {
-                val newRand = rand.nextInt(maxNumberOfEdges) + 1
-                val fromIndex = newRand / size
-                val toIndex = newRand % size
-                if (fromIndex == toIndex) continue
-                if (checkboxes[fromIndex to toIndex]!!.isSelected) continue
+            val maxNumberOfEdges = size * size - size
+            var edgeArray = ArrayList<Pair<Int, Int>>()
+            for (i in 0 until size) {
+                for (j in 0 until size) {
+                    if (i != j) edgeArray.add(Pair(i, j))
+                }
+            }
+            edgeArray.shuffle()
+            for (i in 0 until min(edgeNumber, maxNumberOfEdges)) {
+                val fromIndex = edgeArray[i].first
+                val toIndex = edgeArray[i].second
                 checkboxes[fromIndex to toIndex]!!.isSelected = true
             }
         }
     }
 
+
     private fun makeGraphFromFile(path: Path) {
         clearGraph()
 
-        val fileStrings = Files.readString(path).split('\n')
+        val fileStrings =
+            Files.readAllLines(path)
+                .filterNot { it.isBlank() }
+                .map { it.trim() }
+                .map { it.split(whiteSpaceRegex) }
+                .map { it.map { it.toInt() } }
 
         for (i in 0 until fileStrings.size) {
             addElement()
         }
         for (i in 0 until fileStrings.size) {
-            for (j in 0 until fileStrings[i].length) {
+            for (j in 0 until fileStrings[i].size) {
                 if (i == j) continue
-                if (fileStrings[i][j] == '1') {
-                    val newEdge = Edge(vertexCache.get(i)!!, vertexCache.get(j)!!)
+                if (fileStrings[i][j] == 1) {
                     checkboxes[i to j]!!.isSelected = true
                 }
             }
         }
     }
 
-    private fun startAlgorithm(){
+    private fun startAlgorithm() {
         val service = WarshelAlgorithmService()
         val newGraph = service.compute(graphProperty.get())
         graphProperty.set(newGraph)
@@ -167,6 +176,9 @@ class MatrixIOPane : AnchorPane() {
             checkboxes[fromIndex to toIndex]!!.isSelected = true
         }
     }
+
+    private val fileLineRegex = "^(?:[01]\\s+)*[01]\$".toRegex()
+    private val whiteSpaceRegex = "\\s+".toRegex()
 
     init {
         val buttonAddElement = Button("Добавить")
@@ -219,8 +231,10 @@ class MatrixIOPane : AnchorPane() {
 
         val toggleGroupHbox = HBox(toggleButtonVisModeManual, toggleButtonVisModelAuto)
         toggleGroupHbox.visibleProperty().bind(buttonCheckbox.selectedProperty())
-        visModelAutoPane.visibleProperty().bind(toggleButtonVisModelAuto.selectedProperty().and(buttonCheckbox.selectedProperty()))
-        visModeManualPane.visibleProperty().bind(toggleButtonVisModeManual.selectedProperty().and(buttonCheckbox.selectedProperty()))
+        visModelAutoPane.visibleProperty()
+            .bind(toggleButtonVisModelAuto.selectedProperty().and(buttonCheckbox.selectedProperty()))
+        visModeManualPane.visibleProperty()
+            .bind(toggleButtonVisModeManual.selectedProperty().and(buttonCheckbox.selectedProperty()))
         val visModesStackPane = StackPane(visModelAutoPane, visModeManualPane)
 
         val loadGraphFileChooser = FileChooser()
@@ -229,9 +243,20 @@ class MatrixIOPane : AnchorPane() {
 
         buttonLoadGraph.setOnMouseClicked {
             var file = loadGraphFileChooser.showOpenDialog(AlgoApp.stage)
-            if (file != null){
+            val fileStrings = Files.readAllLines(file.toPath()).filterNot { it.isBlank() }.map { it.trim() }
+            for (string in fileStrings) {
+                if (!fileLineRegex.matches(string)) {
+                    file = null
+                }
+                if (string.split(whiteSpaceRegex).size != fileStrings.size) {
+                    file = null
+                }
+            }
+            if (file != null) {
                 println("Выбран файл: $file")
                 makeGraphFromFile(file.toPath())
+            } else {
+                println("Выбран некорректный файл")
             }
 
         }
@@ -239,12 +264,10 @@ class MatrixIOPane : AnchorPane() {
         paramVertexForRandomMatrix.maxWidth = 100.0
         paramEdgeForRandomMatrix.maxWidth = 100.0
         val generateGraphHBox = HBox(10.0, buttonGenerateGraph, paramVertexForRandomMatrix, paramEdgeForRandomMatrix)
-        buttonGenerateGraph.setOnMouseClicked{
+        buttonGenerateGraph.setOnMouseClicked {
             var vertexCount = paramVertexForRandomMatrix.text.toInt()
             var edgeCount = paramEdgeForRandomMatrix.text.toInt()
-
-            //if (edgeCount > vertexCount*(vertexCount-1)) edgeCount = vertexCount*(vertexCount-1)
-            makeRandomGraph(vertexCount, edgeCount)
+            if (vertexCount in 0..16 && edgeCount >= 0) makeRandomGraph(vertexCount, edgeCount)
         }
 
         vbox.children.addAll(
