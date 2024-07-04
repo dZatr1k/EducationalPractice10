@@ -156,6 +156,14 @@ class MatrixIOPane : AnchorPane() {
         val service = WarshelAlgorithmService()
         val newGraph = service.compute(graphProperty.get())
         graphProperty.set(newGraph)
+
+        val vertexIndex = newGraph.vertices.withIndex().associate { it.value to it.index }
+
+        for (edge in newGraph.edges) {
+            val fromIndex = vertexIndex[edge.from] ?: -1
+            val toIndex = vertexIndex[edge.to] ?: -1
+            checkboxes[fromIndex to toIndex]!!.isSelected = true
+        }
     }
 
     init {
