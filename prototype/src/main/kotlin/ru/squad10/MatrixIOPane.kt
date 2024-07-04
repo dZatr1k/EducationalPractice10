@@ -221,6 +221,7 @@ class MatrixIOPane : AnchorPane() {
 
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
+        buttonStart.setOnMouseClicked { startAlgorithm() }
 
 
         grid.hgap = 16.0
