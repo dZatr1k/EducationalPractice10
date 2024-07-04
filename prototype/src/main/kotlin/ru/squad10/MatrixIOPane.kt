@@ -14,6 +14,7 @@ import ru.squad10.dto.Vertex
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.math.min
 
 class MatrixIOPane : AnchorPane() {
     private var dim = SimpleIntegerProperty(0)
@@ -111,24 +112,31 @@ class MatrixIOPane : AnchorPane() {
             addElement()
         }
 
-        var edgeCount = 0
-        val newEdges = mutableSetOf<Edge>()
-        for (i in vertexCache.values) {
-            for (j in vertexCache.values) {
-                if (i == j) continue
-                if (rand.nextBoolean()) {
-                    val newEdge = Edge(i, j)
-                    val fromIndex = i.name.first() - 'A'
-                    val toIndex = j.name.first() - 'A'
-                    checkboxes[fromIndex to toIndex]!!.isSelected = true
-                    newEdges += newEdge
-                    if (edgeNumber != -1) {
-                        edgeCount++
-                        if (edgeCount == edgeNumber) break
+        if (edgeNumber == -1) {
+            for (i in vertexCache.values) {
+                for (j in vertexCache.values) {
+                    if (i == j) continue
+                    if (rand.nextBoolean()) {
+                        val fromIndex = i.name.first() - 'A'
+                        val toIndex = j.name.first() - 'A'
+                        checkboxes[fromIndex to toIndex]!!.isSelected = true
                     }
                 }
             }
-            if (edgeCount == edgeNumber) break
+        } else {
+            val maxNumberOfEdges = size * size - size
+            var edgeArray = ArrayList<Pair<Int, Int>>()
+            for (i in 0 until size) {
+                for (j in 0 until size) {
+                    if (i != j) edgeArray.add(Pair(i, j))
+                }
+            }
+            edgeArray.shuffle()
+            for (i in 0 until min(edgeNumber, maxNumberOfEdges)) {
+                val fromIndex = edgeArray[i].first
+                val toIndex = edgeArray[i].second
+                checkboxes[fromIndex to toIndex]!!.isSelected = true
+            }
         }
     }
 
@@ -188,7 +196,6 @@ class MatrixIOPane : AnchorPane() {
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
 
-        buttonGenerateGraph.setOnMouseClicked { makeRandomGraph(5) }
 
         grid.hgap = 16.0
         grid.vgap = 16.0
