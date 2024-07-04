@@ -1,6 +1,5 @@
 package ru.squad10
 
-import Edge
 import com.brunomnsilva.smartgraph.graph.DigraphEdgeList
 import com.brunomnsilva.smartgraph.graphview.ForceDirectedSpringGravityLayoutStrategy
 import com.brunomnsilva.smartgraph.graphview.SmartCircularSortedPlacementStrategy
@@ -8,6 +7,7 @@ import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel
 import com.brunomnsilva.smartgraph.graphview.SmartGraphProperties
 import javafx.beans.value.ObservableValue
 import javafx.scene.layout.AnchorPane
+import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
 

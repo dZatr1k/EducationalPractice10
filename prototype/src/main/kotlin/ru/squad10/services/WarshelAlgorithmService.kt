@@ -1,6 +1,6 @@
 package ru.squad10.services
 
-import Edge
+import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 
 class WarshelAlgorithmService {

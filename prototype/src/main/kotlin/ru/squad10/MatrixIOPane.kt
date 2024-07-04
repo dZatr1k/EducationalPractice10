@@ -1,12 +1,12 @@
 package ru.squad10
 
-import Edge
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.*
 import javafx.scene.layout.*
 import javafx.stage.FileChooser
+import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
 import ru.squad10.services.WarshelAlgorithmService
