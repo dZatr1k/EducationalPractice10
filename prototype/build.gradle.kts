@@ -36,6 +36,7 @@ repositories {
 
 dependencies {
     implementation("com.brunomnsilva:smartgraph:2.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
 }
 
 javafx {

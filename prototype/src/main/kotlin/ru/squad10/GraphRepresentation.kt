@@ -3,9 +3,11 @@ package ru.squad10
 import javafx.application.Platform
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.value.ObservableValue
-import ru.squad10.dto.Edge
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import ru.squad10.dto.Graph
-import ru.squad10.services.GraphProcessor
+import ru.squad10.algorithm.GraphProcessor
 
 class GraphRepresentation {
     private val graphProperty = ReadOnlyObjectWrapper(Graph(setOf(), setOf()))
@@ -15,11 +17,13 @@ class GraphRepresentation {
     val matrixPane = MatrixIOPane(this, graphProperty)
     val graphPane = GraphVisPane(readonlyGraphProperty)
 
-    fun startAlgorithm() {
-        val oldGraph = graphProperty.get()
-        val newGraph = graphProcessor.processWarshell(oldGraph)
-        matrixPane.showNewEdges(newGraph)
-        Platform.runLater {graphPane.showNewEdges(oldGraph, newGraph)}
-
+    @OptIn(DelicateCoroutinesApi::class)
+    fun applyAlgorithmInstantly() {
+        GlobalScope.launch{
+            val oldGraph = graphProperty.get()
+            val newGraph = graphProcessor.processWarshell(oldGraph)
+            matrixPane.showNewEdges(newGraph)
+            Platform.runLater {graphPane.showNewEdges(oldGraph, newGraph)}
+        }
     }
 }

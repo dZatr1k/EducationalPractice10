@@ -8,7 +8,6 @@ import javafx.stage.FileChooser
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
-import ru.squad10.services.GraphProcessor
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ThreadLocalRandom
@@ -223,7 +222,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
-        buttonStart.setOnMouseClicked { representation.startAlgorithm() }
+        buttonStart.setOnMouseClicked { representation.applyAlgorithmInstantly() }
 
 
         grid.hgap = 16.0
