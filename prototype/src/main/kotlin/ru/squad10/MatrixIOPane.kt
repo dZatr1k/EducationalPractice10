@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.control.*
 import javafx.scene.layout.*
 import javafx.stage.FileChooser
+import ru.squad10.algorithm.LaunchType
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
@@ -19,6 +20,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
     private val grid = GridPane()
     private val checkboxes = mutableMapOf<Pair<Int, Int>, CheckBox>()
     private val vertexCache = mutableMapOf<Int, Vertex>()
+    private var visualizationState: LaunchType = LaunchType.DEFAULT
 
     private fun addCheckbox(cb: CheckBox, i: Int, j: Int) {
         grid.add(cb, j + 1, i + 1)
@@ -165,17 +167,9 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         }
     }
 
-    fun showNewEdges(newGraph: Graph){
-        val vertexIndex = newGraph.vertices.withIndex().associate { it.value to it.index }
-
-        for (edge in newGraph.edges) {
-            val fromIndex = vertexIndex[edge.from] ?: -1
-            val toIndex = vertexIndex[edge.to] ?: -1
-            if(checkboxes[fromIndex to toIndex]!!.isSelected)
-                continue
-            checkboxes[fromIndex to toIndex]!!.lookup(".box").style = "-fx-background-color: green;"
-            checkboxes[fromIndex to toIndex]!!.isSelected = true
-        }
+    fun setCheckboxColor(fromIndex: Int, toIndex: Int, color: String){
+        checkboxes[fromIndex to toIndex]!!.lookup(".box").style = "-fx-background-color: $color;"
+        checkboxes[fromIndex to toIndex]!!.isSelected = true
     }
 
     private val fileLineRegex = "^(?:[01]\\s+)*[01]\$".toRegex()
@@ -189,6 +183,11 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         val buttonCheckbox = CheckBox("Показ работы")
         val buttonStart = Button("Запуск")
 
+        buttonCheckbox.selectedProperty().addListener {_, _, cur ->
+            if(!cur)
+                visualizationState = LaunchType.DEFAULT
+        }
+
         val paramVertexForRandomMatrix = TextField().apply {
             promptText = "Кол-во вершин"
         }
@@ -199,6 +198,11 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         val toggleGroupVisMode = ToggleGroup()
         val toggleButtonVisModeManual = ToggleButton("Ручной")
         val toggleButtonVisModelAuto = ToggleButton("Автоматический")
+
+        toggleButtonVisModelAuto.selectedProperty().addListener{ _, _, cur ->
+            if(cur)
+                visualizationState = LaunchType.AUTO
+        }
 
         toggleButtonVisModeManual.isSelected = true
 
@@ -222,7 +226,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
-        buttonStart.setOnMouseClicked { representation.applyAlgorithmInstantly() }
+        buttonStart.setOnMouseClicked { representation.applyAlgorithm(visualizationState) }
 
 
         grid.hgap = 16.0

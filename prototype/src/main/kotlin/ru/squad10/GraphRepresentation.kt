@@ -1,6 +1,5 @@
 package ru.squad10
 
-import javafx.application.Platform
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.value.ObservableValue
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -8,6 +7,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ru.squad10.dto.Graph
 import ru.squad10.algorithm.GraphProcessor
+import ru.squad10.algorithm.LaunchType
+import ru.squad10.algorithm.UIInker
+import ru.squad10.algorithm.conditions.AutoCondition
+import ru.squad10.algorithm.conditions.DefaultCondition
 
 class GraphRepresentation {
     private val graphProperty = ReadOnlyObjectWrapper(Graph(setOf(), setOf()))
@@ -18,12 +21,19 @@ class GraphRepresentation {
     val graphPane = GraphVisPane(readonlyGraphProperty)
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun applyAlgorithmInstantly() {
+    fun applyAlgorithm(launchType: LaunchType = LaunchType.DEFAULT) {
         GlobalScope.launch{
-            val oldGraph = graphProperty.get()
-            val newGraph = graphProcessor.processWarshell(oldGraph)
-            matrixPane.showNewEdges(newGraph)
-            Platform.runLater {graphPane.showNewEdges(oldGraph, newGraph)}
+            graphProcessor.setContinueCondition(
+                when(launchType){
+                    LaunchType.DEFAULT -> DefaultCondition()
+                    LaunchType.AUTO -> AutoCondition()
+                }
+            )
+            graphProcessor.processWarshell(graphProperty)
         }
+    }
+
+    init {
+        graphProcessor.setInker(UIInker(matrixPane, graphPane))
     }
 }

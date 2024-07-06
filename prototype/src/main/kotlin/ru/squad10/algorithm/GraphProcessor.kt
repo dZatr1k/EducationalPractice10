@@ -1,44 +1,63 @@
 package ru.squad10.algorithm
 
+import javafx.application.Platform
+import javafx.beans.property.ReadOnlyObjectWrapper
 import kotlinx.coroutines.*
+import ru.squad10.algorithm.conditions.Condition
+import ru.squad10.algorithm.conditions.DefaultCondition
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 
 class GraphProcessor {
-    private val continueCondition: () -> Boolean = {true}
+    private var continueCondition: Condition = DefaultCondition()
+    private var inker: UIInker? = null
 
-    @OptIn(DelicateCoroutinesApi::class)
-    suspend fun processWarshell(graph: Graph): Graph {
-        val asyncAction = GlobalScope.async {
-            val vertices = graph.vertices.toList()
-            val n = vertices.size
-            val vertexIndex = vertices.withIndex().associate { it.value to it.index }
-            val adjacencyMatrix = Array(n) { BooleanArray(n) }
-
-            for (edge in graph.edges) {
-                val fromIndex = vertexIndex[edge.from] ?: -1
-                val toIndex = vertexIndex[edge.to] ?: -1
-                adjacencyMatrix[fromIndex][toIndex] = true
-            }
-
-            val newTransitiveEdges = mutableSetOf<Edge>()
-            for (k in 0 until n) {
-                for (i in 0 until n) {
-                    for (j in 0 until n) {
-                        if (adjacencyMatrix[i][j] || (adjacencyMatrix[i][k] && adjacencyMatrix[k][j])){
-                            newTransitiveEdges.add(Edge(vertices[i], vertices[j]))
-                        }
-                    }
-                }
-            }
-            return@async Graph(vertices.toSet(), newTransitiveEdges)
-        }
-
-        return asyncAction.await()
+    fun setInker(newInker: UIInker){
+        inker = newInker
     }
 
-    suspend fun waitForCondition(): Unit = coroutineScope {
-        while (!continueCondition()) {
+    fun setContinueCondition(newCondition: Condition){
+        continueCondition = newCondition
+    }
+
+    suspend fun processWarshell(graphProperty: ReadOnlyObjectWrapper<Graph>) {
+        val graph = graphProperty.get()
+        val vertices = graph.vertices.toList()
+        val n = vertices.size
+        val vertexIndex = vertices.withIndex().associate { it.value to it.index }
+        val adjacencyMatrix = Array(n) { BooleanArray(n) }
+
+        for (edge in graph.edges) {
+            val fromIndex = vertexIndex[edge.from] ?: -1
+            val toIndex = vertexIndex[edge.to] ?: -1
+            adjacencyMatrix[fromIndex][toIndex] = true
+        }
+
+        for (k in 0 until n) {
+            for (i in 0 until n) {
+                for (j in 0 until n) {
+                    if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
+                        val newEdge = Edge(vertices[i], vertices[j])
+                        graphProperty.set(
+                            Graph(
+                                graphProperty.get().vertices,
+                                graphProperty.get().edges + newEdge)
+                        )
+
+                        Platform.runLater {
+                            inker?.colorNewEdge(newEdge, null, null)
+                            inker?.colorCheckBox(i, j)
+                        }
+                    }
+                    continueCondition.start()
+                    waitForCondition()
+                }
+            }
+        }
+    }
+
+    private suspend fun waitForCondition(): Unit = coroutineScope {
+        while (!continueCondition.getValue()) {
             delay(100)
         }
     }
