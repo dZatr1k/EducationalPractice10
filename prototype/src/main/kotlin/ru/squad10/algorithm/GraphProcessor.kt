@@ -36,6 +36,9 @@ class GraphProcessor {
         for (k in 0 until n) {
             for (i in 0 until n) {
                 for (j in 0 until n) {
+                    if(i == k || j == k)
+                        continue
+
                     if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
                         val newEdge = Edge(vertices[i], vertices[j])
                         graphProperty.set(
@@ -49,8 +52,10 @@ class GraphProcessor {
                             inker?.colorCheckBox(i, j)
                         }
                     }
+                    inker?.colorVertexes(vertices[k], vertices[i], vertices[j])
                     continueCondition.start()
                     waitForCondition()
+                    inker?.resetStyleVertexes(vertices[k], vertices[i], vertices[j])
                 }
             }
         }

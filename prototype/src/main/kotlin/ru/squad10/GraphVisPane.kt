@@ -57,6 +57,13 @@ class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : Anchor
         graphView.getStylableEdge(edge).setStyleInline("-fx-stroke: $color;")
     }
 
+    fun resetVertexStyle(vertex: Vertex){
+        graphView.getStylableVertex(vertex).setStyleInline(null)
+    }
+    fun setVertexColor(vertex: Vertex, color: String){
+        graphView.getStylableVertex(vertex).setStyleInline("-fx-fill: $color;")
+    }
+
     fun showNewEdges(oldGraph: Graph, newGraph: Graph){
         for (edge in newGraph.edges) {
             if(oldGraph.edges.contains(edge))
