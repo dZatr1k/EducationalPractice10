@@ -14,12 +14,11 @@ class AlgoApp : Application() {
     override fun start(primaryStage: Stage) {
         stage = primaryStage
 
-        val matrixIOPane = MatrixIOPane()
-        val graphVisPane = GraphVisPane(matrixIOPane.readonlyGraphProperty)
+        val representation = GraphRepresentation()
 
         val splitPane = SplitPane(
-            matrixIOPane,
-            graphVisPane
+            representation.matrixPane,
+            representation.graphPane
         )
         val scene = Scene(splitPane)
         primaryStage.scene = scene
@@ -28,9 +27,9 @@ class AlgoApp : Application() {
         primaryStage.width = 1000.0
         primaryStage.show()
 
-        graphVisPane.init()
+        representation.graphPane.init()
 
-        matrixIOPane.readonlyGraphProperty.addListener { _, _, value ->
+        representation.readonlyGraphProperty.addListener { _, _, value ->
             println(value)
         }
     }

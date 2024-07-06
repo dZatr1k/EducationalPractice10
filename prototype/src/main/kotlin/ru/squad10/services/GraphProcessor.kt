@@ -1,10 +1,11 @@
 package ru.squad10.services
 
+import ru.squad10.MatrixIOPane
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 
-class WarshelAlgorithmService {
-    fun compute(graph: Graph): Graph {
+class GraphProcessor() {
+    fun processWarshell(graph: Graph): Graph {
         val vertices = graph.vertices.toList()
         val n = vertices.size
         val vertexIndex = vertices.withIndex().associate { it.value to it.index }
