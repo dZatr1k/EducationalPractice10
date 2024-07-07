@@ -1,4 +1,4 @@
-import ru.squad10.dto.Vertex
+package ru.squad10.dto
 
 data class Edge (
     val from: Vertex,

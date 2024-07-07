@@ -1,6 +1,5 @@
 package ru.squad10
 
-import Edge
 import com.brunomnsilva.smartgraph.graph.DigraphEdgeList
 import com.brunomnsilva.smartgraph.graphview.ForceDirectedSpringGravityLayoutStrategy
 import com.brunomnsilva.smartgraph.graphview.SmartCircularSortedPlacementStrategy
@@ -8,12 +7,19 @@ import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel
 import com.brunomnsilva.smartgraph.graphview.SmartGraphProperties
 import javafx.beans.value.ObservableValue
 import javafx.scene.layout.AnchorPane
+import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
 
 class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : AnchorPane() {
     private val diGraph = DigraphEdgeList<Vertex, Edge>()
-    private val graphView = SmartGraphPanel(diGraph, ForceDirectedSpringGravityLayoutStrategy())
+    private val graphView = SmartGraphPanel(
+        diGraph,
+        SmartGraphProperties(this.javaClass.getResourceAsStream("/smartgraph.properties")!!),
+        SmartCircularSortedPlacementStrategy(),
+        this.javaClass.getResource("/smartgraph.css")!!.toURI(),
+        ForceDirectedSpringGravityLayoutStrategy()
+    )
 
     val vertexCache = mutableMapOf<Vertex, com.brunomnsilva.smartgraph.graph.Vertex<Vertex>>()
     val edgeCache = mutableMapOf<Edge, com.brunomnsilva.smartgraph.graph.Edge<Edge, Vertex>>()
