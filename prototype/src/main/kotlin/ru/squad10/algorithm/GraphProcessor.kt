@@ -43,21 +43,26 @@ class GraphProcessor(
                             StepSize.SMALL to currentSmallIndex
                         )
                     ) {
-                        Platform.runLater {
-                            if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
-                                val newEdge = Edge(vertices[i], vertices[j])
-                                graphProperty.set(
-                                    Graph(
-                                        graphProperty.get().vertices,
-                                        graphProperty.get().edges + newEdge
-                                    )
-                                )
+                        inker.colorVertexes(vertices[k], vertices[i], vertices[j])
+                        
+                        if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
+                            val newEdge = Edge(vertices[i], vertices[j])
+                            if(graphProperty.get().edges.contains(newEdge))
+                                return@GraphProcessingStep
 
-                                inker.colorNewEdge(newEdge, null, null)
-                                inker.colorCheckBox(i, j)
+                            val firstFormativeEdge = Edge(vertices[i], vertices[k])
+                            val secondFormativeEdge = Edge(vertices[k], vertices[j])
+
+                            graphProperty.set(
+                                Graph(
+                                    graphProperty.get().vertices,
+                                    graphProperty.get().edges + newEdge
+                                )
+                            )
+                            Platform.runLater {
+                                inker.colorNewEdge(newEdge, firstFormativeEdge, secondFormativeEdge)
                             }
-                            inker.colorVertexes(vertices[k], vertices[i], vertices[j])
-//                            inker.resetStyleVertexes(vertices[k], vertices[i], vertices[j])
+                            inker.colorCheckBox(i, j)
                         }
                     }
                     utilizedMediumLoop = true
@@ -69,6 +74,8 @@ class GraphProcessor(
             }
         }
 
+        inker.resetStyleForOldVertexes()
+        inker.resetStyleForOldEdges()
         return GraphProcessorRunner(steps)
     }
 
