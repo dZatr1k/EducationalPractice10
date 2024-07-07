@@ -135,7 +135,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
             }
         } else {
             val maxNumberOfEdges = size * size - size
-            var edgeArray = ArrayList<Pair<Int, Int>>()
+            val edgeArray = ArrayList<Pair<Int, Int>>()
             for (i in 0 until size) {
                 for (j in 0 until size) {
                     if (i != j) edgeArray.add(Pair(i, j))
