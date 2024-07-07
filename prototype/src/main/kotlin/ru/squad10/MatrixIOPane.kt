@@ -102,6 +102,18 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         }
     }
 
+    private fun deleteLoop(){
+        for (i in vertexCache.values) {
+            for (j in vertexCache.values) {
+                if (i == j){
+                    val fromIndex = i.name.first() - 'A'
+                    val toIndex = j.name.first() - 'A'
+                    checkboxes[fromIndex to toIndex]!!.isSelected = false
+                }
+            }
+        }
+    }
+
     private fun makeRandomGraph(size: Int, edgeNumber: Int = -1) {
         val rand = ThreadLocalRandom.current()
         clearGraph()
@@ -183,6 +195,8 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         val buttonGenerateGraph = Button("Рандом")
         val buttonCheckbox = CheckBox("Показ работы")
         val buttonStart = Button("Запуск")
+        val buttonClear = Button("Очистить")
+        val buttonDeleteLoop = Button("Удалить петли")
 
         buttonCheckbox.selectedProperty().addListener {_, _, cur ->
             if(!cur)
@@ -244,6 +258,9 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
             .bind(toggleButtonVisModeManual.selectedProperty().and(buttonCheckbox.selectedProperty()))
         val visModesStackPane = StackPane(visModelAutoPane, visModeManualPane)
 
+        buttonClear.setOnMouseClicked { clearGraph() }
+        buttonDeleteLoop.setOnMouseClicked { deleteLoop() }
+
         val loadGraphFileChooser = FileChooser()
         loadGraphFileChooser.title = "Выберете файл"
         loadGraphFileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Text Files", "*.txt"))
@@ -268,18 +285,24 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
         }
 
+        val deleteGraphHBox = HBox(10.0, buttonRemoveElement, buttonClear, buttonDeleteLoop)
+
         paramVertexForRandomMatrix.maxWidth = 100.0
         paramEdgeForRandomMatrix.maxWidth = 100.0
         val generateGraphHBox = HBox(10.0, buttonGenerateGraph, paramVertexForRandomMatrix, paramEdgeForRandomMatrix)
         buttonGenerateGraph.setOnMouseClicked {
-            var vertexCount = paramVertexForRandomMatrix.text.toInt()
-            var edgeCount = paramEdgeForRandomMatrix.text.toInt()
-            if (vertexCount in 0..16 && edgeCount >= 0) makeRandomGraph(vertexCount, edgeCount)
+            val vertexCount = paramVertexForRandomMatrix.text.toInt()
+            val edgeCount = paramEdgeForRandomMatrix.text
+            println(edgeCount)
+            when(edgeCount){
+                "" -> if (vertexCount in 0..16) makeRandomGraph(vertexCount)
+                else -> if (vertexCount in 0..16 && edgeCount.toInt() >=0) makeRandomGraph(vertexCount, edgeCount.toInt())
+            }
         }
 
         vbox.children.addAll(
             buttonAddElement,
-            buttonRemoveElement,
+            deleteGraphHBox,
             buttonLoadGraph,
             generateGraphHBox,
             buttonCheckbox,
