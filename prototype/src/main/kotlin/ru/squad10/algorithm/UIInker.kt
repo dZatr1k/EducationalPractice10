@@ -16,16 +16,18 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
         }
     }
 
-    fun colorNewEdge(newEdge: Edge?, firstFormativeEdge: Edge?, secondFormativeEdge: Edge?){
-        resetStyleForOldEdges()
-        colorNewEdges()
-
-        if (newEdge != null) {
-            graphPane.setEdgeColor(newEdge, "green")
-            coloredEdges.add(newEdge)
-            coloredNewEdges.add(newEdge)
+    fun resetStyleNewEdges(){
+        try{
+            for(edge in coloredNewEdges){
+                graphPane.resetEdgeStyle(edge)
+            }
         }
+        finally {
+            coloredNewEdges.clear()
+        }
+    }
 
+    fun colorFormativeEdges(firstFormativeEdge: Edge?, secondFormativeEdge: Edge?) {
         if (firstFormativeEdge != null) {
             graphPane.setEdgeColor(firstFormativeEdge, "blue")
             coloredEdges.add(firstFormativeEdge)
@@ -33,7 +35,15 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
 
         if (secondFormativeEdge != null) {
             graphPane.setEdgeColor(secondFormativeEdge, "blue")
-            coloredNewEdges.add(secondFormativeEdge)
+            coloredEdges.add(secondFormativeEdge)
+        }
+    }
+
+    fun colorNewEdge(newEdge: Edge?){
+        if (newEdge != null) {
+            graphPane.setEdgeColor(newEdge, "green")
+            coloredEdges.add(newEdge)
+            coloredNewEdges.add(newEdge)
         }
     }
 
@@ -42,8 +52,6 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
     }
 
     fun colorVertexes(firstVertex: Vertex?, secondVertex: Vertex?, thirdVertex: Vertex?){
-        resetStyleForOldVertexes()
-
         if (firstVertex != null) {
             graphPane.setVertexColor(firstVertex, "blue")
             coloredVertexes.add(firstVertex)
@@ -70,5 +78,6 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
             graphPane.resetEdgeStyle(edge)
         }
         coloredEdges.clear()
+        colorNewEdges()
     }
 }

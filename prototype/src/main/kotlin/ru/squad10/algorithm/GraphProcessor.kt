@@ -10,6 +10,7 @@ class GraphProcessor(
     private val graphProperty: ReadOnlyObjectWrapper<Graph>
 ) {
     fun newRunner(): GraphProcessorRunner {
+        inker.resetStyleNewEdges()
         val graph = graphProperty.get()
         val vertices = graph.vertices.toList()
         val n = vertices.size
@@ -43,15 +44,20 @@ class GraphProcessor(
                             StepSize.SMALL to currentSmallIndex
                         )
                     ) {
+                        val firstFormativeEdge = Edge(vertices[i], vertices[k])
+                        val secondFormativeEdge = Edge(vertices[k], vertices[j])
+
+                        inker.resetStyleForOldEdges()
+                        inker.resetStyleForOldVertexes()
                         inker.colorVertexes(vertices[k], vertices[i], vertices[j])
+                        Platform.runLater{
+                            inker.colorFormativeEdges(firstFormativeEdge, secondFormativeEdge)
+                        }
 
                         if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
                             val newEdge = Edge(vertices[i], vertices[j])
                             if(graphProperty.get().edges.contains(newEdge))
                                 return@GraphProcessingStep
-
-                            val firstFormativeEdge = Edge(vertices[i], vertices[k])
-                            val secondFormativeEdge = Edge(vertices[k], vertices[j])
 
                             graphProperty.set(
                                 Graph(
@@ -60,7 +66,7 @@ class GraphProcessor(
                                 )
                             )
                             Platform.runLater {
-                                inker.colorNewEdge(newEdge, firstFormativeEdge, secondFormativeEdge)
+                                inker.colorNewEdge(newEdge)
                             }
                             inker.colorCheckBox(i, j)
                         }
@@ -73,7 +79,6 @@ class GraphProcessor(
                 }
             }
         }
-
 
         return GraphProcessorRunner(steps)
     }
