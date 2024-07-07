@@ -33,6 +33,12 @@ class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : Anchor
         for (addedVertex in addedVertices) {
             vertexCache[addedVertex] = diGraph.insertVertex(addedVertex)
         }
+
+        for (removedEdge in removedEdges) {
+            diGraph.removeEdge(edgeCache[removedEdge])
+            edgeCache.remove(removedEdge)
+        }
+
         for (removedVertex in removedVertices) {
             diGraph.removeVertex(vertexCache[removedVertex])
             vertexCache.remove(removedVertex)
@@ -40,19 +46,8 @@ class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : Anchor
         for (addedEdge in addedEdges) {
             edgeCache[addedEdge] = diGraph.insertEdge(addedEdge.from, addedEdge.to, addedEdge)
         }
-        for (removedEdge in removedEdges) {
-            diGraph.removeEdge(edgeCache[removedEdge])
-            edgeCache.remove(removedEdge)
-        }
 
-        resetEdgesStyle()
         graphView.update()
-    }
-
-    fun resetEdgesStyle(){
-        for (edge in diGraph.edges()) {
-            graphView.getStylableEdge(edge)?.setStyleInline(null)
-        }
     }
 
     fun resetEdgeStyle(edge: Edge) {
@@ -68,14 +63,6 @@ class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : Anchor
     }
     fun setVertexColor(vertex: Vertex, color: String){
         graphView.getStylableVertex(vertex).setStyleInline("-fx-fill: $color;")
-    }
-
-    fun showNewEdges(oldGraph: Graph, newGraph: Graph){
-        for (edge in newGraph.edges) {
-            if(oldGraph.edges.contains(edge))
-                continue
-            graphView.getStylableEdge(diGraph.edges().first { diEdge -> diEdge.element() == edge }.element()).setStyleInline("-fx-stroke: green;")
-        }
     }
 
     fun init() {

@@ -44,7 +44,7 @@ class GraphProcessor(
                         )
                     ) {
                         inker.colorVertexes(vertices[k], vertices[i], vertices[j])
-                        
+
                         if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
                             val newEdge = Edge(vertices[i], vertices[j])
                             if(graphProperty.get().edges.contains(newEdge))
@@ -74,9 +74,14 @@ class GraphProcessor(
             }
         }
 
-        inker.resetStyleForOldVertexes()
-        inker.resetStyleForOldEdges()
+
         return GraphProcessorRunner(steps)
     }
 
+    fun clearColor(){
+        inker.resetStyleForOldVertexes()
+        Platform.runLater {
+            inker.resetStyleForOldEdges()
+        }
+    }
 }

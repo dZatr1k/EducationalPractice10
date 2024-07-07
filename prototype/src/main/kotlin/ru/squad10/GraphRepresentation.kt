@@ -24,6 +24,7 @@ class GraphRepresentation {
         // TODO lock interface or smth while graph is processing
         graphProcessorRunner.isFinishedReadonly.addListener { _, _, value ->
             if (value) {
+                graphProcessor.clearColor()
                 println("Graph processing finished")
             }
         }
