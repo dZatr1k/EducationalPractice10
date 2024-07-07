@@ -2,25 +2,14 @@ package ru.squad10.algorithm
 
 import javafx.application.Platform
 import javafx.beans.property.ReadOnlyObjectWrapper
-import kotlinx.coroutines.*
-import ru.squad10.algorithm.conditions.Condition
-import ru.squad10.algorithm.conditions.DefaultCondition
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 
-class GraphProcessor {
-    private var continueCondition: Condition = DefaultCondition()
-    private var inker: UIInker? = null
-
-    fun setInker(newInker: UIInker){
-        inker = newInker
-    }
-
-    fun setContinueCondition(newCondition: Condition){
-        continueCondition = newCondition
-    }
-
-    suspend fun processWarshell(graphProperty: ReadOnlyObjectWrapper<Graph>) {
+class GraphProcessor(
+    private val inker: UIInker,
+    private val graphProperty: ReadOnlyObjectWrapper<Graph>
+) {
+    fun newRunner(): GraphProcessorRunner {
         val graph = graphProperty.get()
         val vertices = graph.vertices.toList()
         val n = vertices.size
@@ -33,37 +22,54 @@ class GraphProcessor {
             adjacencyMatrix[fromIndex][toIndex] = true
         }
 
+        val steps = mutableListOf<GraphProcessingStep>()
+
+        var currentMediumIndex = 0
+        var currentSmallIndex = 0
+
         for (k in 0 until n) {
+            currentMediumIndex = 0
             for (i in 0 until n) {
+                var utilizedMediumLoop = false
+                currentSmallIndex = 0
                 for (j in 0 until n) {
-                    if(i == k || j == k)
+                    if (i == k || j == k)
                         continue
 
-                    if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
-                        val newEdge = Edge(vertices[i], vertices[j])
-                        graphProperty.set(
-                            Graph(
-                                graphProperty.get().vertices,
-                                graphProperty.get().edges + newEdge)
+                    steps += GraphProcessingStep(
+                        mapOf(
+                            StepSize.BIG to k,
+                            StepSize.MEDIUM to currentMediumIndex,
+                            StepSize.SMALL to currentSmallIndex
                         )
-
+                    ) {
                         Platform.runLater {
-                            inker?.colorNewEdge(newEdge, null, null)
-                            inker?.colorCheckBox(i, j)
+                            if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
+                                val newEdge = Edge(vertices[i], vertices[j])
+                                graphProperty.set(
+                                    Graph(
+                                        graphProperty.get().vertices,
+                                        graphProperty.get().edges + newEdge
+                                    )
+                                )
+
+                                inker.colorNewEdge(newEdge, null, null)
+                                inker.colorCheckBox(i, j)
+                            }
+                            inker.colorVertexes(vertices[k], vertices[i], vertices[j])
+//                            inker.resetStyleVertexes(vertices[k], vertices[i], vertices[j])
                         }
                     }
-                    inker?.colorVertexes(vertices[k], vertices[i], vertices[j])
-                    continueCondition.start()
-                    waitForCondition()
-                    inker?.resetStyleVertexes(vertices[k], vertices[i], vertices[j])
+                    utilizedMediumLoop = true
+                    currentSmallIndex++
+                }
+                if (utilizedMediumLoop) {
+                    currentMediumIndex++
                 }
             }
         }
+
+        return GraphProcessorRunner(steps)
     }
 
-    private suspend fun waitForCondition(): Unit = coroutineScope {
-        while (!continueCondition.getValue()) {
-            delay(100)
-        }
-    }
 }

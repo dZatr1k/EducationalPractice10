@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.control.*
 import javafx.scene.layout.*
 import javafx.stage.FileChooser
-import ru.squad10.dto.Edge
 import ru.squad10.algorithm.LaunchType
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
