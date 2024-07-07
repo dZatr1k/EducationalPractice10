@@ -7,6 +7,7 @@ import ru.squad10.algorithm.LaunchType
 import ru.squad10.algorithm.StepSize
 import ru.squad10.algorithm.UIInker
 import ru.squad10.algorithm.steppers.AutoStepper
+import ru.squad10.algorithm.steppers.ButtonStepper
 import ru.squad10.dto.Graph
 import java.time.Duration
 
@@ -36,9 +37,11 @@ class GraphRepresentation {
                 }
             }
             LaunchType.AUTO -> {
-                AutoStepper(Duration.ofMillis(250), graphProcessorRunner).start()
+                AutoStepper(Duration.ofMillis(matrixPane.getAutomaticStepDelayInMills()), graphProcessorRunner).start()
             }
-            LaunchType.MANUAL -> TODO()
+            LaunchType.MANUAL -> {
+                ButtonStepper(matrixPane.smallStepButton, graphProcessorRunner).start()
+            }
         }
     }
 

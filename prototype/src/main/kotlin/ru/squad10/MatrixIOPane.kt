@@ -22,6 +22,8 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
     private val vertexCache = mutableMapOf<Int, Vertex>()
     private var visualizationState: LaunchType = LaunchType.DEFAULT
 
+    val smallStepButton: Button = Button("Малый шаг")
+
     private fun addCheckbox(cb: CheckBox, i: Int, j: Int) {
         grid.add(cb, j + 1, i + 1)
         checkboxes[(i to j)] = cb
@@ -185,6 +187,10 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         checkboxes[fromIndex to toIndex]!!.isSelected = true
     }
 
+    fun getAutomaticStepDelayInMills(): Long{
+        return 250
+    }
+
     private val fileLineRegex = "^(?:[01]\\s+)*[01]\$".toRegex()
     private val whiteSpaceRegex = "\\s+".toRegex()
 
@@ -197,11 +203,6 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         val buttonStart = Button("Запуск")
         val buttonClear = Button("Очистить")
         val buttonDeleteLoop = Button("Удалить петли")
-
-        buttonCheckbox.selectedProperty().addListener {_, _, cur ->
-            if(!cur)
-                visualizationState = LaunchType.DEFAULT
-        }
 
         val paramVertexForRandomMatrix = TextField().apply {
             promptText = "Кол-во вершин"
@@ -219,9 +220,27 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
                 visualizationState = LaunchType.AUTO
         }
 
+        toggleButtonVisModeManual.selectedProperty().addListener{ _, _, cur ->
+            if(cur)
+                visualizationState = LaunchType.MANUAL
+        }
+
         toggleButtonVisModeManual.isSelected = true
 
         toggleGroupVisMode.toggles.addAll(toggleButtonVisModeManual, toggleButtonVisModelAuto)
+
+        buttonCheckbox.selectedProperty().addListener {_, _, cur ->
+            if(!cur)
+                visualizationState = LaunchType.DEFAULT
+            else {
+                if(toggleButtonVisModeManual.isSelected){
+                    visualizationState = LaunchType.MANUAL
+                }
+                else if(toggleButtonVisModelAuto.isSelected){
+                    visualizationState = LaunchType.AUTO
+                }
+            }
+        }
 
         val visModelAutoTimeSelector = Slider(0.25, 10.0, 1.0)
 
@@ -231,7 +250,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         )
 
         val visModeManualPane = HBox(
-            Button("Малый шаг"),
+            smallStepButton,
             Button("Средний шаг"),
             Button("Большой шаг"),
         )
