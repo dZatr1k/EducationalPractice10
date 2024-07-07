@@ -2,9 +2,9 @@ package ru.squad10
 
 import com.brunomnsilva.smartgraph.graph.DigraphEdgeList
 import com.brunomnsilva.smartgraph.graphview.ForceDirectedSpringGravityLayoutStrategy
-import com.brunomnsilva.smartgraph.graphview.SmartCircularSortedPlacementStrategy
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel
 import com.brunomnsilva.smartgraph.graphview.SmartGraphProperties
+import javafx.application.Platform
 import javafx.beans.value.ObservableValue
 import javafx.scene.layout.AnchorPane
 import ru.squad10.dto.Edge
@@ -45,7 +45,37 @@ class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : Anchor
             edgeCache.remove(removedEdge)
         }
 
+        resetEdgesStyle()
         graphView.update()
+    }
+
+    fun resetEdgesStyle(){
+        for (edge in diGraph.edges()) {
+            graphView.getStylableEdge(edge)?.setStyleInline(null)
+        }
+    }
+
+    fun resetEdgeStyle(edge: Edge) {
+        graphView.getStylableEdge(edge).setStyleInline(null)
+    }
+
+    fun setEdgeColor(edge: Edge, color: String) {
+        graphView.getStylableEdge(edge).setStyleInline("-fx-stroke: $color;")
+    }
+
+    fun resetVertexStyle(vertex: Vertex){
+        graphView.getStylableVertex(vertex).setStyleInline(null)
+    }
+    fun setVertexColor(vertex: Vertex, color: String){
+        graphView.getStylableVertex(vertex).setStyleInline("-fx-fill: $color;")
+    }
+
+    fun showNewEdges(oldGraph: Graph, newGraph: Graph){
+        for (edge in newGraph.edges) {
+            if(oldGraph.edges.contains(edge))
+                continue
+            graphView.getStylableEdge(diGraph.edges().first { diEdge -> diEdge.element() == edge }.element()).setStyleInline("-fx-stroke: green;")
+        }
     }
 
     fun init() {

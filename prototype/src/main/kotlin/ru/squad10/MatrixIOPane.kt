@@ -2,28 +2,26 @@ package ru.squad10
 
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.value.ObservableValue
 import javafx.scene.control.*
 import javafx.scene.layout.*
 import javafx.stage.FileChooser
 import ru.squad10.dto.Edge
+import ru.squad10.algorithm.LaunchType
+import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
-import ru.squad10.services.WarshelAlgorithmService
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.min
 
-class MatrixIOPane : AnchorPane() {
+class MatrixIOPane(private val representation: GraphRepresentation, private val graphProperty: ReadOnlyObjectWrapper<Graph>) : AnchorPane() {
     private var dim = SimpleIntegerProperty(0)
     private val vbox = VBox()
     private val grid = GridPane()
     private val checkboxes = mutableMapOf<Pair<Int, Int>, CheckBox>()
     private val vertexCache = mutableMapOf<Int, Vertex>()
-
-    private val graphProperty = ReadOnlyObjectWrapper(Graph(setOf(), setOf()))
-    val readonlyGraphProperty: ObservableValue<Graph> = graphProperty
+    private var visualizationState: LaunchType = LaunchType.DEFAULT
 
     private fun addCheckbox(cb: CheckBox, i: Int, j: Int) {
         grid.add(cb, j + 1, i + 1)
@@ -40,6 +38,7 @@ class MatrixIOPane : AnchorPane() {
                     )
                 )
             } else {
+                resetCheckboxesStyle()
                 graphProperty.set(
                     Graph(
                         graphProperty.get().vertices,
@@ -164,18 +163,15 @@ class MatrixIOPane : AnchorPane() {
         }
     }
 
-    private fun startAlgorithm() {
-        val service = WarshelAlgorithmService()
-        val newGraph = service.compute(graphProperty.get())
-        graphProperty.set(newGraph)
-
-        val vertexIndex = newGraph.vertices.withIndex().associate { it.value to it.index }
-
-        for (edge in newGraph.edges) {
-            val fromIndex = vertexIndex[edge.from] ?: -1
-            val toIndex = vertexIndex[edge.to] ?: -1
-            checkboxes[fromIndex to toIndex]!!.isSelected = true
+    fun resetCheckboxesStyle(){
+        for(checkbox in checkboxes){
+            checkbox.value.lookup(".box").style = null
         }
+    }
+
+    fun setCheckboxColor(fromIndex: Int, toIndex: Int, color: String){
+        checkboxes[fromIndex to toIndex]!!.lookup(".box").style = "-fx-background-color: $color;"
+        checkboxes[fromIndex to toIndex]!!.isSelected = true
     }
 
     private val fileLineRegex = "^(?:[01]\\s+)*[01]\$".toRegex()
@@ -189,6 +185,11 @@ class MatrixIOPane : AnchorPane() {
         val buttonCheckbox = CheckBox("Показ работы")
         val buttonStart = Button("Запуск")
 
+        buttonCheckbox.selectedProperty().addListener {_, _, cur ->
+            if(!cur)
+                visualizationState = LaunchType.DEFAULT
+        }
+
         val paramVertexForRandomMatrix = TextField().apply {
             promptText = "Кол-во вершин"
         }
@@ -199,6 +200,11 @@ class MatrixIOPane : AnchorPane() {
         val toggleGroupVisMode = ToggleGroup()
         val toggleButtonVisModeManual = ToggleButton("Ручной")
         val toggleButtonVisModelAuto = ToggleButton("Автоматический")
+
+        toggleButtonVisModelAuto.selectedProperty().addListener{ _, _, cur ->
+            if(cur)
+                visualizationState = LaunchType.AUTO
+        }
 
         toggleButtonVisModeManual.isSelected = true
 
@@ -222,7 +228,7 @@ class MatrixIOPane : AnchorPane() {
 
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
-        buttonStart.setOnMouseClicked { startAlgorithm() }
+        buttonStart.setOnMouseClicked { representation.applyAlgorithm(visualizationState) }
 
 
         grid.hgap = 16.0

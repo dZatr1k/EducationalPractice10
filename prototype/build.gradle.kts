@@ -1,3 +1,5 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
     java
     kotlin("jvm") version "1.9.21"
@@ -26,7 +28,6 @@ javafx {
     version = "17.0.8"
     modules("javafx.controls")
 }
-
 
 kotlin {
     jvmToolchain(17)

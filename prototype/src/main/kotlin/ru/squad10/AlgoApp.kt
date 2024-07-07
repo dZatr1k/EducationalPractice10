@@ -28,12 +28,11 @@ class AlgoApp : Application() {
             VisualLogger(pane)
         )))
 
-        val matrixIOPane = MatrixIOPane()
-        val graphVisPane = GraphVisPane(matrixIOPane.readonlyGraphProperty)
+        val representation = GraphRepresentation()
 
         val splitPane = SplitPane(
-            matrixIOPane,
-            graphVisPane
+            representation.matrixPane,
+            representation.graphPane
         )
 
         val mainSplitPane = SplitPane(
@@ -49,6 +48,10 @@ class AlgoApp : Application() {
         primaryStage.width = 1000.0
         primaryStage.show()
 
-        graphVisPane.init()
+        representation.graphPane.init()
+
+        representation.readonlyGraphProperty.addListener { _, _, value ->
+            println(value)
+        }
     }
 }
