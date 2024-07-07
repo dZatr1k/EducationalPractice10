@@ -4,6 +4,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.value.ObservableValue
 import ru.squad10.algorithm.GraphProcessor
 import ru.squad10.algorithm.LaunchType
+import ru.squad10.algorithm.StepSize
 import ru.squad10.algorithm.UIInker
 import ru.squad10.algorithm.steppers.AutoStepper
 import ru.squad10.dto.Graph
@@ -28,10 +29,15 @@ class GraphRepresentation {
         }
 
         when(launchType) {
-            LaunchType.DEFAULT -> TODO()
+            LaunchType.DEFAULT -> {
+                while (!graphProcessorRunner.isFinishedReadonly.get()) {
+                    graphProcessorRunner.step(StepSize.BIG)
+                }
+            }
             LaunchType.AUTO -> {
                 AutoStepper(Duration.ofMillis(250), graphProcessorRunner).start()
             }
+            LaunchType.MANUAL -> TODO()
         }
     }
 
