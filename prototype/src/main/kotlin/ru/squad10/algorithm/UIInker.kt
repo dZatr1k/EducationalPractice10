@@ -9,10 +9,24 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
     private val coloredVertexes: MutableSet<Vertex> = mutableSetOf()
     private val coloredEdges: MutableSet<Edge> = mutableSetOf()
     private val coloredNewEdges: MutableSet<Edge> = mutableSetOf()
+    private val coloredLabels: MutableSet<Pair<Int, Int>> = mutableSetOf()
+    private val coloredNewCheckboxes: MutableSet<Pair<Int, Int>> = mutableSetOf()
+    private val coloredCheckboxes: MutableSet<Pair<Int, Int>> = mutableSetOf()
 
     private fun colorNewEdges(){
         for(edge in coloredNewEdges){
             graphPane.setEdgeColor(edge, "green")
+        }
+    }
+
+    fun resetStyleNewCheckboxes(){
+        try{
+            for(pair in coloredNewCheckboxes){
+                matrixPane.resetCheckboxStyle(pair.first, pair.second)
+            }
+        }
+        finally {
+            coloredNewCheckboxes.clear()
         }
     }
 
@@ -24,6 +38,27 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
         }
         finally {
             coloredNewEdges.clear()
+        }
+    }
+
+    fun resetLablesStyle(){
+        for(pair in coloredLabels){
+            matrixPane.resetGridLabelStyle(pair.first, pair.second)
+        }
+        coloredLabels.clear()
+    }
+
+    fun resetCheckboxesStyle(){
+        for(pair in coloredCheckboxes){
+            matrixPane.resetCheckboxStyle(pair.first, pair.second)
+        }
+        coloredCheckboxes.clear()
+        colorNewCheckboxes()
+    }
+
+    fun colorNewCheckboxes(){
+        for(pair in coloredNewCheckboxes){
+            matrixPane.setCheckboxColor(pair.first, pair.second, "green")
         }
     }
 
@@ -47,8 +82,31 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
         }
     }
 
-    fun colorCheckBox(fromIndex: Int, toIndex: Int){
+    fun colorMainLabels(fromIndex: Int, toIndex: Int){
+        matrixPane.setGridLabelColor(0, fromIndex, "blue")
+        matrixPane.setGridLabelColor(toIndex, 0, "blue")
+        coloredLabels.add(0 to fromIndex)
+        coloredLabels.add(toIndex to 0)
+    }
+
+    fun colorFormativeLabels(fromIndex: Int, toIndex: Int){
+        matrixPane.setGridLabelColor(0, fromIndex, "red")
+        matrixPane.setGridLabelColor(toIndex, 0, "red")
+        coloredLabels.add(0 to fromIndex)
+        coloredLabels.add(toIndex to 0)
+    }
+
+    fun colorNewCheckBox(fromIndex: Int, toIndex: Int){
         matrixPane.setCheckboxColor(fromIndex, toIndex, "green")
+        coloredCheckboxes.add(fromIndex to toIndex)
+        coloredNewCheckboxes.add(fromIndex to toIndex)
+    }
+
+    fun colorFormativeCheckBoxes(firstFromIndex: Int, firstToIndex: Int, secondFromIndex: Int, secondToIndex: Int){
+        matrixPane.setCheckboxColor(firstFromIndex, firstToIndex, "blue")
+        coloredCheckboxes.add(firstFromIndex to firstToIndex)
+        matrixPane.setCheckboxColor(secondFromIndex, secondToIndex, "blue")
+        coloredCheckboxes.add(secondFromIndex to secondToIndex)
     }
 
     fun colorVertexes(firstVertex: Vertex?, secondVertex: Vertex?, thirdVertex: Vertex?){

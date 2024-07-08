@@ -21,6 +21,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
     private val vbox = VBox()
     private val grid = GridPane()
     private val checkboxes = mutableMapOf<Pair<Int, Int>, CheckBox>()
+    private val labels = mutableMapOf<Pair<Int, Int>, Label>()
     private val vertexCache = mutableMapOf<Int, Vertex>()
     private var visualizationState: LaunchType = LaunchType.DEFAULT
     private var blockableUI: MutableSet<Node> = mutableSetOf()
@@ -62,8 +63,12 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
         dim.set(dim.get() + 1)
 
-        grid.add(Label(name), 0, dim.get())
-        grid.add(Label(name), dim.get(), 0)
+        var lb = Label(name)
+        labels[0 to dim.get()] = lb
+        grid.add(lb, 0, dim.get())
+        lb = Label(name)
+        labels[dim.get() to 0] = lb
+        grid.add(lb, dim.get(), 0)
 
         val j = dim.get() - 1
         for (i in 0 until dim.get()) {
@@ -194,9 +199,24 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         }
     }
 
+    fun getCheckboxes(): MutableMap<Pair<Int, Int>, CheckBox>{
+        return checkboxes
+    }
+
     fun setCheckboxColor(fromIndex: Int, toIndex: Int, color: String){
         checkboxes[fromIndex to toIndex]!!.lookup(".box").style = "-fx-background-color: $color;"
-        checkboxes[fromIndex to toIndex]!!.isSelected = true
+    }
+
+    fun resetCheckboxStyle(fromIndex: Int, toIndex: Int){
+        checkboxes[fromIndex to toIndex]!!.lookup(".box").style = null
+    }
+
+    fun setGridLabelColor(fromIndex: Int, toIndex: Int, color: String){
+        labels[fromIndex to toIndex]!!.style = "-fx-text-fill: $color;"
+    }
+
+    fun resetGridLabelStyle(fromIndex: Int, toIndex: Int){
+        labels[fromIndex to toIndex]!!.style = null
     }
 
     fun getAutomaticStepDelayInMills(): Long{

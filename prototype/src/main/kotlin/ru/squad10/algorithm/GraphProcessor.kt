@@ -2,15 +2,19 @@ package ru.squad10.algorithm
 
 import javafx.application.Platform
 import javafx.beans.property.ReadOnlyObjectWrapper
+import javafx.scene.control.CheckBox
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 
 class GraphProcessor(
     private val inker: UIInker,
-    private val graphProperty: ReadOnlyObjectWrapper<Graph>
+    private val graphProperty: ReadOnlyObjectWrapper<Graph>,
+    private val checkboxes: MutableMap<Pair<Int, Int>, CheckBox> = mutableMapOf()
 ) {
     fun newRunner(): GraphProcessorRunner {
         inker.resetStyleNewEdges()
+        inker.resetStyleNewCheckboxes()
+
         val graph = graphProperty.get()
         val vertices = graph.vertices.toList()
         val n = vertices.size
@@ -49,7 +53,12 @@ class GraphProcessor(
 
                         inker.resetStyleForOldEdges()
                         inker.resetStyleForOldVertexes()
+                        inker.resetLablesStyle()
+                        inker.resetCheckboxesStyle()
                         inker.colorVertexes(vertices[k], vertices[i], vertices[j])
+                        inker.colorMainLabels(k+1, k+1)
+                        inker.colorFormativeLabels(i+1, j+1)
+                        inker.colorFormativeCheckBoxes(i, k, k, j)
                         Platform.runLater{
                             inker.colorFormativeEdges(firstFormativeEdge, secondFormativeEdge)
                         }
@@ -68,7 +77,8 @@ class GraphProcessor(
                             Platform.runLater {
                                 inker.colorNewEdge(newEdge)
                             }
-                            inker.colorCheckBox(i, j)
+                            checkboxes[i to j]!!.isSelected = true
+                            inker.colorNewCheckBox(i, j)
                         }
                     }
                     utilizedMediumLoop = true
@@ -84,7 +94,9 @@ class GraphProcessor(
     }
 
     fun clearColor(){
+        inker.resetCheckboxesStyle()
         inker.resetStyleForOldVertexes()
+        inker.resetLablesStyle()
         Platform.runLater {
             inker.resetStyleForOldEdges()
         }

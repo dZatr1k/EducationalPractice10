@@ -17,7 +17,7 @@ class GraphRepresentation {
 
     val matrixPane = MatrixIOPane(this, graphProperty)
     val graphPane = GraphVisPane(readonlyGraphProperty)
-    private val graphProcessor = GraphProcessor(UIInker(matrixPane, graphPane), graphProperty)
+    private val graphProcessor = GraphProcessor(UIInker(matrixPane, graphPane), graphProperty, matrixPane.getCheckboxes())
 
     fun applyAlgorithm(launchType: LaunchType) {
         matrixPane.lockUI()
