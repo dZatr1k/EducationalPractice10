@@ -51,7 +51,7 @@ class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : Anchor
     }
 
     fun resetEdgeStyle(edge: Edge) {
-        graphView.getStylableEdge(edge).setStyleInline(null)
+        graphView.getStylableEdge(edge)?.setStyleInline(null)
     }
 
     fun setEdgeColor(edge: Edge, color: String) {
