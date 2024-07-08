@@ -61,7 +61,7 @@ class GraphRepresentation {
             }
             LaunchType.MANUAL -> {
                 AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм запустился в ручном режиме визуализации")
-                stepper = ButtonStepper(matrixPane.smallStepButton, currentGraphProcessorRunner!!)
+                stepper = ButtonStepper(matrixPane.smallStepButton, matrixPane.mediumStepButton, matrixPane.bigStepButton, currentGraphProcessorRunner!!)
             }
         }
         stepper?.start()

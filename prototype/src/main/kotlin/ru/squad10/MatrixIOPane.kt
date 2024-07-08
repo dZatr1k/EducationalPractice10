@@ -31,6 +31,8 @@ class MatrixIOPane(private val representation: GraphRepresentation,
     private var blockableUI: MutableSet<Node> = mutableSetOf()
 
     val smallStepButton: Button = Button("Малый шаг")
+    val mediumStepButton: Button = Button("Средний шаг")
+    val bigStepButton: Button = Button("Большой шаг")
 
     private fun addCheckbox(cb: CheckBox, i: Int, j: Int) {
         grid.add(cb, j + 1, i + 1)
@@ -308,8 +310,8 @@ class MatrixIOPane(private val representation: GraphRepresentation,
 
         val visModeManualPane = HBox(
             smallStepButton,
-            Button("Средний шаг"),
-            Button("Большой шаг"),
+            mediumStepButton,
+            bigStepButton,
         )
 
         buttonRemoveElement.disableProperty().bind(dim.greaterThan(2).not())
