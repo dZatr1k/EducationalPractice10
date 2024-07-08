@@ -1,7 +1,9 @@
 package ru.squad10
 
 import javafx.application.Platform
+import javafx.beans.property.BooleanProperty
 import javafx.beans.property.ReadOnlyObjectWrapper
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.value.ObservableValue
 import ru.squad10.algorithm.*
 import ru.squad10.algorithm.steppers.AutoStepper
@@ -19,6 +21,9 @@ class GraphRepresentation {
 
     val readonlyGraphProperty: ObservableValue<Graph> = graphProperty
 
+    private var isRunning = ReadOnlyObjectWrapper(false)
+    private val observableIsRunning: ObservableValue<Boolean> = isRunning
+
     val matrixPane = MatrixIOPane(this, graphProperty, visualizationState)
     val graphPane = GraphVisPane(readonlyGraphProperty)
 
@@ -29,23 +34,20 @@ class GraphRepresentation {
     private var stepper: Stepper? = null
 
     fun applyAlgorithm() {
-        matrixPane.lockUI()
         UIInker.setLaunchType(visualizationState.get())
         currentGraphProcessorRunner = graphProcessor.newRunner()
 
         // TODO lock interface or smth while graph is processing
         currentGraphProcessorRunner!!.isFinishedReadonly.addListener { _, _, value ->
             if (value) {
-                graphProcessor.clearColor()
-                matrixPane.unlockUI()
+                stop()
                 Platform.runLater{
                     AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм закончил свою работу")
                 }
-                currentGraphProcessorRunner = null
-                stepper = null
             }
         }
 
+        isRunning.set(true)
         changeAlgorithmMode()
     }
 
@@ -67,9 +69,15 @@ class GraphRepresentation {
         stepper?.start()
     }
 
+    fun isRunning() : ObservableValue<Boolean> = observableIsRunning
+
     fun stop(){
         if(stepper != null){
             stepper!!.stop()
+            graphProcessor.clearColor()
+            currentGraphProcessorRunner = null
+            stepper = null
+            isRunning.set(false)
         }
     }
 

@@ -1,9 +1,9 @@
 package ru.squad10
 
 import javafx.application.Platform
+import javafx.beans.binding.Bindings
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.value.ObservableValue
 import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.*
@@ -27,8 +27,6 @@ class MatrixIOPane(private val representation: GraphRepresentation,
     private val checkboxes = mutableMapOf<Pair<Int, Int>, CheckBox>()
     private val labels = mutableMapOf<Pair<Int, Int>, Label>()
     private val vertexCache = mutableMapOf<Int, Vertex>()
-
-    private var blockableUI: MutableSet<Node> = mutableSetOf()
 
     val smallStepButton: Button = Button("Малый шаг")
     val mediumStepButton: Button = Button("Средний шаг")
@@ -235,18 +233,6 @@ class MatrixIOPane(private val representation: GraphRepresentation,
         return 250
     }
 
-    fun lockUI(){
-        for(node in blockableUI){
-            node.isDisable = true
-        }
-    }
-
-    fun unlockUI(){
-        for(node in blockableUI){
-            node.isDisable = false
-        }
-    }
-
     private val fileLineRegex = "^(?:[01]\\s+)*[01]\$".toRegex()
     private val whiteSpaceRegex = "\\s+".toRegex()
 
@@ -257,6 +243,7 @@ class MatrixIOPane(private val representation: GraphRepresentation,
         val buttonGenerateGraph = Button("Рандом")
         val buttonCheckbox = CheckBox("Показ работы")
         val buttonStart = Button("Запуск")
+        val buttonStop = Button("Остановить")
         val buttonClear = Button("Очистить")
         val buttonDeleteLoop = Button("Удалить петли")
 
@@ -267,7 +254,15 @@ class MatrixIOPane(private val representation: GraphRepresentation,
             promptText = "Кол-во ребер"
         }
 
-        blockableUI.add(buttonStart)
+        buttonStop.isDisable = true
+
+        buttonStart.disableProperty().bind(representation.isRunning())
+        buttonLoadGraph.disableProperty().bind(representation.isRunning())
+        buttonGenerateGraph.disableProperty().bind(representation.isRunning())
+        buttonDeleteLoop.disableProperty().bind(representation.isRunning())
+        paramVertexForRandomMatrix.disableProperty().bind(representation.isRunning())
+        paramEdgeForRandomMatrix.disableProperty().bind(representation.isRunning())
+        buttonClear.disableProperty().bind(representation.isRunning())
 
         val toggleGroupVisMode = ToggleGroup()
         val toggleButtonVisModeManual = ToggleButton("Ручной")
@@ -301,6 +296,17 @@ class MatrixIOPane(private val representation: GraphRepresentation,
             })
         }
 
+        val removeBinding = Bindings.createBooleanBinding(
+            {representation.isRunning().value || dim.value <= 2},
+            dim, representation.isRunning())
+
+        buttonRemoveElement.disableProperty().bind(removeBinding)
+
+        val addBinding = Bindings.createBooleanBinding(
+            {dim.value >= 16 || representation.isRunning().value},
+            dim, representation.isRunning())
+        buttonAddElement.disableProperty().bind(addBinding)
+
         val visModelAutoTimeSelector = Slider(0.25, 10.0, 1.0)
 
         val visModelAutoPane = VBox(
@@ -314,14 +320,16 @@ class MatrixIOPane(private val representation: GraphRepresentation,
             bigStepButton,
         )
 
-        buttonRemoveElement.disableProperty().bind(dim.greaterThan(2).not())
-        buttonAddElement.disableProperty().bind(dim.lessThan(16).not())
-
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
         buttonStart.setOnMouseClicked {
             AlgoApp.logger.log(Logger.Level.INFO, "Запуск алгоритма")
+            buttonStop.isDisable = false
             representation.applyAlgorithm()
+        }
+        buttonStop.setOnMouseClicked {
+            AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм остановлен до полного завершения")
+            representation.stop()
         }
 
 
@@ -389,7 +397,7 @@ class MatrixIOPane(private val representation: GraphRepresentation,
             buttonCheckbox,
             toggleGroupHbox,
             visModesStackPane,
-            buttonStart,
+            HBox(buttonStart, buttonStop),
             grid,
         )
 
