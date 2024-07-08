@@ -18,7 +18,7 @@ class AutoStepper(
         scheduled = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
             {
                 try {
-                    AlgoApp.logger.log(Logger.Level.INFO, "Совершён малый шаг в автоматическом режиме")
+                    //AlgoApp.logger.log(Logger.Level.INFO, "Совершён малый шаг в автоматическом режиме")
                     graphProcessorRunner.step(StepSize.SMALL)
                 } catch (e: Throwable) {
                     e.printStackTrace()

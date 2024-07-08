@@ -36,7 +36,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
         cb.selectedProperty().addListener { _, _, cur ->
             if (cur) {
-                AlgoApp.logger.log(Logger.Level.INFO, "Добавление дуги: $edge")
+                //AlgoApp.logger.log(Logger.Level.INFO, "Добавление дуги: $edge")
                 graphProperty.set(
                     Graph(
                         graphProperty.get().vertices,

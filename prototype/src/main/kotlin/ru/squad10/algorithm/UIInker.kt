@@ -5,18 +5,25 @@ import ru.squad10.MatrixIOPane
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Vertex
 
-class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: GraphVisPane) {
+class UIInker(
+    private val matrixPane: MatrixIOPane,
+    private val graphPane: GraphVisPane) {
     private val coloredVertexes: MutableSet<Vertex> = mutableSetOf()
     private val coloredEdges: MutableSet<Edge> = mutableSetOf()
     private val coloredNewEdges: MutableSet<Edge> = mutableSetOf()
     private val coloredLabels: MutableSet<Pair<Int, Int>> = mutableSetOf()
     private val coloredNewCheckboxes: MutableSet<Pair<Int, Int>> = mutableSetOf()
     private val coloredCheckboxes: MutableSet<Pair<Int, Int>> = mutableSetOf()
+    private var launchType: LaunchType = LaunchType.DEFAULT
 
     private fun colorNewEdges(){
         for(edge in coloredNewEdges){
             graphPane.setEdgeColor(edge, "green")
         }
+    }
+
+    fun setLaunchType(newLaunchType: LaunchType){
+        launchType = newLaunchType
     }
 
     fun resetStyleNewCheckboxes(){
@@ -63,6 +70,9 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
     }
 
     fun colorFormativeEdges(firstFormativeEdge: Edge?, secondFormativeEdge: Edge?) {
+        if(launchType == LaunchType.DEFAULT)
+            return
+
         if (firstFormativeEdge != null) {
             graphPane.setEdgeColor(firstFormativeEdge, "blue")
             coloredEdges.add(firstFormativeEdge)
@@ -90,6 +100,9 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
     }
 
     fun colorFormativeLabels(fromIndex: Int, toIndex: Int){
+        if(launchType == LaunchType.DEFAULT)
+            return
+
         matrixPane.setGridLabelColor(0, fromIndex, "red")
         matrixPane.setGridLabelColor(toIndex, 0, "red")
         coloredLabels.add(0 to fromIndex)
@@ -103,6 +116,8 @@ class UIInker(private val matrixPane: MatrixIOPane, private val graphPane: Graph
     }
 
     fun colorFormativeCheckBoxes(firstFromIndex: Int, firstToIndex: Int, secondFromIndex: Int, secondToIndex: Int){
+        if(launchType == LaunchType.DEFAULT)
+            return
         matrixPane.setCheckboxColor(firstFromIndex, firstToIndex, "blue")
         coloredCheckboxes.add(firstFromIndex to firstToIndex)
         matrixPane.setCheckboxColor(secondFromIndex, secondToIndex, "blue")
