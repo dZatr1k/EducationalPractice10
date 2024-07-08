@@ -1,5 +1,6 @@
 package ru.squad10
 
+import javafx.application.Platform
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.value.ObservableValue
 import ru.squad10.algorithm.GraphProcessor
@@ -31,7 +32,9 @@ class GraphRepresentation {
             if (value) {
                 graphProcessor.clearColor()
                 matrixPane.unlockUI()
-                //AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм закончил свою работу")
+                Platform.runLater{
+                    AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм закончил свою работу")
+                }
             }
         }
 

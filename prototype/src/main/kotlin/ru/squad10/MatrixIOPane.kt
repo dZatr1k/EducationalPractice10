@@ -1,5 +1,6 @@
 package ru.squad10
 
+import javafx.application.Platform
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.Node
@@ -36,7 +37,9 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
         cb.selectedProperty().addListener { _, _, cur ->
             if (cur) {
-                //AlgoApp.logger.log(Logger.Level.INFO, "Добавление дуги: $edge")
+                Platform.runLater{
+                    AlgoApp.logger.log(Logger.Level.INFO, "Добавление дуги: $edge")
+                }
                 graphProperty.set(
                     Graph(
                         graphProperty.get().vertices,
