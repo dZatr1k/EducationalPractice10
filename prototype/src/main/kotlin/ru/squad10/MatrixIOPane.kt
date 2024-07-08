@@ -226,12 +226,12 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         val toggleButtonVisModelAuto = ToggleButton("Автоматический")
 
         toggleButtonVisModelAuto.selectedProperty().addListener{ _, _, cur ->
-            if(cur)
+            if(cur && buttonCheckbox.isSelected)
                 visualizationState = LaunchType.AUTO
         }
 
         toggleButtonVisModeManual.selectedProperty().addListener{ _, _, cur ->
-            if(cur)
+            if(cur && buttonCheckbox.isSelected)
                 visualizationState = LaunchType.MANUAL
         }
 
