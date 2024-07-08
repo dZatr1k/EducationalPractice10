@@ -1,5 +1,6 @@
 package ru.squad10.algorithm.steppers
 
+import javafx.application.Platform
 import ru.squad10.AlgoApp
 import ru.squad10.algorithm.GraphProcessorRunner
 import ru.squad10.algorithm.StepSize
@@ -18,7 +19,9 @@ class AutoStepper(
         scheduled = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
             {
                 try {
-                    //AlgoApp.logger.log(Logger.Level.INFO, "Совершён малый шаг в автоматическом режиме")
+                    Platform.runLater{
+                        AlgoApp.logger.log(Logger.Level.INFO, "Совершён малый шаг в автоматическом режиме")
+                    }
                     graphProcessorRunner.step(StepSize.SMALL)
                 } catch (e: Throwable) {
                     e.printStackTrace()
