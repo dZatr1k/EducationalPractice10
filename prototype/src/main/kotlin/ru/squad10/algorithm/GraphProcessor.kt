@@ -62,14 +62,16 @@ class GraphProcessor(
                         inker.colorFormativeLabels(i+1, j+1)
                         inker.colorFormativeCheckBoxes(i, k, k, j)
                         Platform.runLater{
-                            inker.colorFormativeEdges(firstFormativeEdge, secondFormativeEdge)
                             AlgoApp.logger.log(Logger.Level.INFO, "Рассматриваются вершины ${vertices[i]}, ${vertices[k]}, ${vertices[j]} и рёбра ${vertices[i]}->${vertices[k]}, ${vertices[k]}->${vertices[j]}")
                         }
                         if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
+                            Platform.runLater{
+                                inker.colorFormativeEdges(firstFormativeEdge, secondFormativeEdge)
+                            }
                             val newEdge = Edge(vertices[i], vertices[j])
                             if(graphProperty.get().edges.contains(newEdge))
                                 return@GraphProcessingStep
-
+                            adjacencyMatrix[i][j] = true
                             graphProperty.set(
                                 Graph(
                                     graphProperty.get().vertices,
