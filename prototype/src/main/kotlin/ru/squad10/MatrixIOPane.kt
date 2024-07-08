@@ -91,6 +91,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
                 graphProperty.get().edges
             )
         )
+        resetCheckboxesStyle()
     }
 
     private fun removeElement() {
@@ -110,6 +111,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         )
 
         dim.set(dim.get() - 1)
+        resetCheckboxesStyle()
     }
 
     private fun clearGraph() {
@@ -129,6 +131,8 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
                 }
             }
         }
+
+        resetCheckboxesStyle()
     }
 
     private fun makeRandomGraph(size: Int, edgeNumber: Int = -1) {
@@ -198,7 +202,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
     fun resetCheckboxesStyle(){
         for(checkbox in checkboxes){
-            checkbox.value.lookup(".box").style = null
+            checkbox.value?.lookup(".box")?.style = null
         }
     }
 

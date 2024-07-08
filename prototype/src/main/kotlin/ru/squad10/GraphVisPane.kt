@@ -5,6 +5,7 @@ import com.brunomnsilva.smartgraph.graphview.ForceDirectedSpringGravityLayoutStr
 import com.brunomnsilva.smartgraph.graphview.SmartCircularSortedPlacementStrategy
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel
 import com.brunomnsilva.smartgraph.graphview.SmartGraphProperties
+import javafx.application.Platform
 import javafx.beans.value.ObservableValue
 import javafx.scene.layout.AnchorPane
 import ru.squad10.dto.Edge
@@ -47,7 +48,16 @@ class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : Anchor
             edgeCache[addedEdge] = diGraph.insertEdge(addedEdge.from, addedEdge.to, addedEdge)
         }
 
+        Platform.runLater{
+            resetAllEdgesStyle()
+        }
         graphView.update()
+    }
+
+    fun resetAllEdgesStyle(){
+        for(edge in diGraph.edges()){
+            resetEdgeStyle(edge.element())
+        }
     }
 
     fun resetEdgeStyle(edge: Edge) {
