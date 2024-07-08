@@ -29,6 +29,9 @@ class AlgoApp : Application() {
         )))
 
         val representation = GraphRepresentation()
+        stage.setOnCloseRequest {
+            representation.stop()
+        }
 
         val splitPane = SplitPane(
             representation.matrixPane,

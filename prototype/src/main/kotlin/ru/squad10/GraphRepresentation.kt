@@ -67,6 +67,12 @@ class GraphRepresentation {
         stepper?.start()
     }
 
+    fun stop(){
+        if(stepper != null){
+            stepper!!.stop()
+        }
+    }
+
     init{
         observableVisualizationState.addListener{ _, _, cur ->
             if(stepper != null){
