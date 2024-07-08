@@ -51,7 +51,7 @@ class GraphRepresentation {
         changeAlgorithmMode()
     }
 
-    private fun changeAlgorithmMode(){
+    fun changeAlgorithmMode(){
         when(visualizationState.get()) {
             LaunchType.DEFAULT -> {
                 AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм запустился в стандартном режиме")

@@ -27,6 +27,7 @@ class MatrixIOPane(private val representation: GraphRepresentation,
     private val checkboxes = mutableMapOf<Pair<Int, Int>, CheckBox>()
     private val labels = mutableMapOf<Pair<Int, Int>, Label>()
     private val vertexCache = mutableMapOf<Int, Vertex>()
+    private var autoVisualizationDelayInMills: Long = 1000
 
     val smallStepButton: Button = Button("Малый шаг")
     val mediumStepButton: Button = Button("Средний шаг")
@@ -230,7 +231,7 @@ class MatrixIOPane(private val representation: GraphRepresentation,
     }
 
     fun getAutomaticStepDelayInMills(): Long{
-        return 250
+        return autoVisualizationDelayInMills
     }
 
     private val fileLineRegex = "^(?:[01]\\s+)*[01]\$".toRegex()
@@ -307,10 +308,19 @@ class MatrixIOPane(private val representation: GraphRepresentation,
             dim, representation.isRunning())
         buttonAddElement.disableProperty().bind(addBinding)
 
-        val visModelAutoTimeSelector = Slider(0.25, 10.0, 1.0)
+        val visModelAutoTimeSelector = Slider(1.0, 5.0, 1.0)
+        visModelAutoTimeSelector.blockIncrement = 0.01
+        visModelAutoTimeSelector.valueProperty().addListener { _, _, cur ->
+            autoVisualizationDelayInMills = (1000 * cur.toDouble()).toLong()
+        }
+        visModelAutoTimeSelector.disableProperty().bind(representation.isRunning())
 
+        val label = Label()
+        label.textProperty()
+            .bind(Bindings
+                .createStringBinding({"Время шага: ${(visModelAutoTimeSelector.value*1000).toLong()}"}, visModelAutoTimeSelector.valueProperty()))
         val visModelAutoPane = VBox(
-            Label("Время шага"),
+            label,
             visModelAutoTimeSelector
         )
 
