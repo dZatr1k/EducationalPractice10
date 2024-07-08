@@ -14,7 +14,6 @@ class ButtonStepper (
 ) : Stepper{
     private fun step(stepSize: StepSize){
         try {
-            AlgoApp.logger.log(Logger.Level.INFO, "Совершён малый шаг в ручном режиме")
             graphProcessorRunner.step(stepSize)
         } catch (e: Throwable) {
             e.printStackTrace()
@@ -22,14 +21,17 @@ class ButtonStepper (
     }
     override fun start() {
         smallButton.setOnMouseClicked {
+            AlgoApp.logger.log(Logger.Level.INFO, "Совершён малый шаг в ручном режиме")
             step(StepSize.SMALL)
         }
 
         mediumButton.setOnMouseClicked {
+            AlgoApp.logger.log(Logger.Level.INFO, "Совершён средний шаг в ручном режиме")
             step(StepSize.MEDIUM)
         }
 
         bigButton.setOnMouseClicked {
+            AlgoApp.logger.log(Logger.Level.INFO, "Совершён большой шаг в ручном режиме")
             step(StepSize.BIG)
         }
 

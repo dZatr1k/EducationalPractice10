@@ -42,7 +42,7 @@ class GraphRepresentation {
             if (value) {
                 stop()
                 Platform.runLater{
-                    AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм закончил свою работу")
+                    AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм успешно закончил свою работу")
                 }
             }
         }
@@ -78,6 +78,7 @@ class GraphRepresentation {
             currentGraphProcessorRunner = null
             stepper = null
             isRunning.set(false)
+            AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм был остановлен.")
         }
     }
 
