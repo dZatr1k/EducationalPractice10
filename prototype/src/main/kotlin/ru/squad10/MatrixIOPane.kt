@@ -2,6 +2,7 @@ package ru.squad10
 
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.*
 import javafx.stage.FileChooser
@@ -22,6 +23,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
     private val checkboxes = mutableMapOf<Pair<Int, Int>, CheckBox>()
     private val vertexCache = mutableMapOf<Int, Vertex>()
     private var visualizationState: LaunchType = LaunchType.DEFAULT
+    private var blockableUI: MutableSet<Node> = mutableSetOf()
 
     val smallStepButton: Button = Button("Малый шаг")
 
@@ -201,6 +203,18 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         return 250
     }
 
+    fun lockUI(){
+        for(node in blockableUI){
+            node.isDisable = true
+        }
+    }
+
+    fun unlockUI(){
+        for(node in blockableUI){
+            node.isDisable = false
+        }
+    }
+
     private val fileLineRegex = "^(?:[01]\\s+)*[01]\$".toRegex()
     private val whiteSpaceRegex = "\\s+".toRegex()
 
@@ -221,6 +235,8 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
             promptText = "Кол-во ребер"
         }
 
+        blockableUI.add(buttonStart)
+
         val toggleGroupVisMode = ToggleGroup()
         val toggleButtonVisModeManual = ToggleButton("Ручной")
         val toggleButtonVisModelAuto = ToggleButton("Автоматический")
@@ -240,14 +256,15 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         toggleGroupVisMode.toggles.addAll(toggleButtonVisModeManual, toggleButtonVisModelAuto)
 
         buttonCheckbox.selectedProperty().addListener {_, _, cur ->
-            if(!cur)
-                visualizationState = LaunchType.DEFAULT
-            else {
+            visualizationState = if(!cur){
+                LaunchType.DEFAULT
+            } else {
                 if(toggleButtonVisModeManual.isSelected){
-                    visualizationState = LaunchType.MANUAL
-                }
-                else if(toggleButtonVisModelAuto.isSelected){
-                    visualizationState = LaunchType.AUTO
+                    LaunchType.MANUAL
+                } else if(toggleButtonVisModelAuto.isSelected){
+                    LaunchType.AUTO
+                } else{
+                    LaunchType.DEFAULT
                 }
             }
         }

@@ -20,12 +20,14 @@ class GraphRepresentation {
     private val graphProcessor = GraphProcessor(UIInker(matrixPane, graphPane), graphProperty)
 
     fun applyAlgorithm(launchType: LaunchType) {
+        matrixPane.lockUI()
         val graphProcessorRunner = graphProcessor.newRunner()
 
         // TODO lock interface or smth while graph is processing
         graphProcessorRunner.isFinishedReadonly.addListener { _, _, value ->
             if (value) {
                 graphProcessor.clearColor()
+                matrixPane.unlockUI()
                 println("Graph processing finished")
             }
         }

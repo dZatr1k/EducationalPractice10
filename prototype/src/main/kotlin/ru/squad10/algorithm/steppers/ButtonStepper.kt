@@ -10,15 +10,16 @@ class ButtonStepper(
 )  {
     fun start() {
         button.setOnMouseClicked {
-            if (graphProcessorRunner.isFinishedReadonly.get()) {
-                button.setOnMouseClicked {  }
-                return@setOnMouseClicked
-            }
             try {
                 graphProcessorRunner.step(StepSize.SMALL)
             } catch (e: Throwable) {
                 e.printStackTrace()
             }
+        }
+
+        graphProcessorRunner.isFinishedReadonly.addListener {_, _, value ->
+            if(value)
+                button.setOnMouseClicked {  }
         }
     }
 }
