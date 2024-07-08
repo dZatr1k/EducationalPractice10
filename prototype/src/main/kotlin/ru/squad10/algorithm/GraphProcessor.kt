@@ -3,8 +3,10 @@ package ru.squad10.algorithm
 import javafx.application.Platform
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.scene.control.CheckBox
+import ru.squad10.AlgoApp
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
+import ru.squad10.log.Logger
 
 class GraphProcessor(
     private val inker: UIInker,
@@ -62,7 +64,7 @@ class GraphProcessor(
                         Platform.runLater{
                             inker.colorFormativeEdges(firstFormativeEdge, secondFormativeEdge)
                         }
-
+                        AlgoApp.logger.log(Logger.Level.INFO, "Рассматриваются вершины ${vertices[i]}, ${vertices[k]}, ${vertices[j]} и рёбра ${vertices[i]}->${vertices[k]}, ${vertices[k]}->${vertices[j]}")
                         if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
                             val newEdge = Edge(vertices[i], vertices[j])
                             if(graphProperty.get().edges.contains(newEdge))

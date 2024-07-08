@@ -9,6 +9,7 @@ import ru.squad10.algorithm.UIInker
 import ru.squad10.algorithm.steppers.AutoStepper
 import ru.squad10.algorithm.steppers.ButtonStepper
 import ru.squad10.dto.Graph
+import ru.squad10.log.Logger
 import java.time.Duration
 
 class GraphRepresentation {
@@ -28,20 +29,23 @@ class GraphRepresentation {
             if (value) {
                 graphProcessor.clearColor()
                 matrixPane.unlockUI()
-                println("Graph processing finished")
+                AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм закончил свою работу")
             }
         }
 
         when(launchType) {
             LaunchType.DEFAULT -> {
+                AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм запустился в стандартном режиме")
                 while (!graphProcessorRunner.isFinishedReadonly.get()) {
                     graphProcessorRunner.step(StepSize.BIG)
                 }
             }
             LaunchType.AUTO -> {
+                AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм запустился в автоматическом режиме визуализации")
                 AutoStepper(Duration.ofMillis(matrixPane.getAutomaticStepDelayInMills()), graphProcessorRunner).start()
             }
             LaunchType.MANUAL -> {
+                AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм запустился в ручном режиме визуализации")
                 ButtonStepper(matrixPane.smallStepButton, graphProcessorRunner).start()
             }
         }
