@@ -25,5 +25,6 @@ class VisualLoggerPane : ScrollPane() {
             }
             style = """-fx-text-fill: $color"""
         })
+        vvalue = 1.0
     }
 }
