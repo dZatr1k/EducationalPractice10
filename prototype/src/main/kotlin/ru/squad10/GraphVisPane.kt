@@ -71,7 +71,6 @@ class GraphVisPane(private val graphObservable: ObservableValue<Graph>) : Anchor
     }
 
     init {
-        val properties = SmartGraphProperties()
 //        val container = SmartGraphDemoContainer(graphView)
 
         graphObservable.addListener(::onGraphUpdated)
