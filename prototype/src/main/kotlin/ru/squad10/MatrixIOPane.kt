@@ -9,6 +9,7 @@ import ru.squad10.algorithm.LaunchType
 import ru.squad10.dto.Edge
 import ru.squad10.dto.Graph
 import ru.squad10.dto.Vertex
+import ru.squad10.log.Logger
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ThreadLocalRandom
@@ -32,6 +33,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
         cb.selectedProperty().addListener { _, _, cur ->
             if (cur) {
+                AlgoApp.logger.log(Logger.Level.INFO, "Добавление дуги: $edge")
                 graphProperty.set(
                     Graph(
                         graphProperty.get().vertices,
@@ -40,6 +42,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
                 )
             } else {
                 resetCheckboxesStyle()
+                AlgoApp.logger.log(Logger.Level.INFO, "Удаление дуги: $edge")
                 graphProperty.set(
                     Graph(
                         graphProperty.get().vertices,
@@ -51,8 +54,8 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
     }
 
     private fun addElement() {
-        AlgoApp.logger.log("Добавление элемента")
         val name = ('A' + dim.get()).toString()
+        AlgoApp.logger.log(Logger.Level.INFO, "Добавление элемента: $name")
         vertexCache[dim.get()] = Vertex(name)
 
         dim.set(dim.get() + 1)
@@ -82,6 +85,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
     private fun removeElement() {
         val name = ('A' + dim.get() - 1).toString()
+        AlgoApp.logger.log(Logger.Level.INFO, "Удаление элемента: $name")
         val vertex = Vertex(name)
         grid.children.removeIf { node ->
             val toRemove = ((GridPane.getRowIndex(node) == dim.get()) || (GridPane.getColumnIndex(node) == dim.get()))
@@ -99,6 +103,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
     }
 
     private fun clearGraph() {
+        AlgoApp.logger.log(Logger.Level.INFO, "Очистка графа")
         while (dim.get() != 0) {
             removeElement()
         }
@@ -117,6 +122,10 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
     }
 
     private fun makeRandomGraph(size: Int, edgeNumber: Int = -1) {
+        when{
+            edgeNumber == -1 -> AlgoApp.logger.log(Logger.Level.INFO, "Создание рандомного графа. Размер: $size, Количество дуг: неограничено")
+            else -> AlgoApp.logger.log(Logger.Level.INFO, "Создание рандомного графа. Размер: $size, Количество дуг: $edgeNumber")
+        }
         val rand = ThreadLocalRandom.current()
         clearGraph()
 
@@ -154,6 +163,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
 
     private fun makeGraphFromFile(path: Path) {
+        AlgoApp.logger.log(Logger.Level.INFO, "Создание графа по файлу")
         clearGraph()
 
         val fileStrings =
@@ -260,7 +270,10 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
-        buttonStart.setOnMouseClicked { representation.applyAlgorithm(visualizationState) }
+        buttonStart.setOnMouseClicked {
+            AlgoApp.logger.log(Logger.Level.INFO, "Запуск алгоритма")
+            representation.applyAlgorithm(visualizationState)
+        }
 
 
         grid.hgap = 16.0

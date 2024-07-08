@@ -1,9 +1,15 @@
 package ru.squad10.log
 
 abstract class Logger {
-    fun log(vararg message: Any) {
-        log(message.joinToString(" ") { it.toString() })
+    enum class Level {
+        DEBUG,
+        INFO,
+        ERROR
     }
 
-    protected abstract fun log(message: String)
+    fun log(level: Level, vararg message: Any) {
+        log(level, message.joinToString(" ") { it.toString() })
+    }
+
+    protected abstract fun log(level: Level, message: String)
 }
