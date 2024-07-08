@@ -3,6 +3,7 @@ package ru.squad10
 import javafx.application.Platform
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.value.ObservableValue
 import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.*
@@ -17,14 +18,16 @@ import java.nio.file.Path
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.min
 
-class MatrixIOPane(private val representation: GraphRepresentation, private val graphProperty: ReadOnlyObjectWrapper<Graph>) : AnchorPane() {
+class MatrixIOPane(private val representation: GraphRepresentation,
+                   private val graphProperty: ReadOnlyObjectWrapper<Graph>,
+                   private var visualizationState: ReadOnlyObjectWrapper<LaunchType>) : AnchorPane() {
     private var dim = SimpleIntegerProperty(0)
     private val vbox = VBox()
     private val grid = GridPane()
     private val checkboxes = mutableMapOf<Pair<Int, Int>, CheckBox>()
     private val labels = mutableMapOf<Pair<Int, Int>, Label>()
     private val vertexCache = mutableMapOf<Int, Vertex>()
-    private var visualizationState: LaunchType = LaunchType.DEFAULT
+
     private var blockableUI: MutableSet<Node> = mutableSetOf()
 
     val smallStepButton: Button = Button("Малый шаг")
@@ -202,7 +205,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
     fun resetCheckboxesStyle(){
         for(checkbox in checkboxes){
-            checkbox.value?.lookup(".box")?.style = null
+            checkbox.value.lookup(".box")?.style = null
         }
     }
 
@@ -270,12 +273,12 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
 
         toggleButtonVisModelAuto.selectedProperty().addListener{ _, _, cur ->
             if(cur && buttonCheckbox.isSelected)
-                visualizationState = LaunchType.AUTO
+                visualizationState.set(LaunchType.AUTO)
         }
 
         toggleButtonVisModeManual.selectedProperty().addListener{ _, _, cur ->
             if(cur && buttonCheckbox.isSelected)
-                visualizationState = LaunchType.MANUAL
+                visualizationState.set(LaunchType.MANUAL)
         }
 
         toggleButtonVisModeManual.isSelected = true
@@ -283,7 +286,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         toggleGroupVisMode.toggles.addAll(toggleButtonVisModeManual, toggleButtonVisModelAuto)
 
         buttonCheckbox.selectedProperty().addListener {_, _, cur ->
-            visualizationState = if(!cur){
+            visualizationState.set( if(!cur){
                 LaunchType.DEFAULT
             } else {
                 if(toggleButtonVisModeManual.isSelected){
@@ -293,7 +296,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
                 } else{
                     LaunchType.DEFAULT
                 }
-            }
+            })
         }
 
         val visModelAutoTimeSelector = Slider(0.25, 10.0, 1.0)
@@ -316,7 +319,7 @@ class MatrixIOPane(private val representation: GraphRepresentation, private val 
         buttonRemoveElement.setOnMouseClicked { removeElement() }
         buttonStart.setOnMouseClicked {
             AlgoApp.logger.log(Logger.Level.INFO, "Запуск алгоритма")
-            representation.applyAlgorithm(visualizationState)
+            representation.applyAlgorithm()
         }
 
 

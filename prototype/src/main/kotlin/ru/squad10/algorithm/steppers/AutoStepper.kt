@@ -13,9 +13,11 @@ import java.util.concurrent.TimeUnit
 class AutoStepper(
     private val duration: Duration,
     private val graphProcessorRunner: GraphProcessorRunner
-) {
-    fun start() {
-        var scheduled: ScheduledFuture<*>? = null
+) : Stepper{
+
+    private var scheduled: ScheduledFuture<*>? = null
+
+    override fun start() {
         scheduled = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
             {
                 try {
@@ -27,12 +29,16 @@ class AutoStepper(
                     e.printStackTrace()
                 }
                 if (graphProcessorRunner.isFinishedReadonly.get()) {
-                    scheduled!!.cancel(false)
+                    stop()
                 }
             },
             duration.toMillis(),
             duration.toMillis(),
             TimeUnit.MILLISECONDS
         )
+    }
+
+    override fun stop() {
+        scheduled!!.cancel(false)
     }
 }

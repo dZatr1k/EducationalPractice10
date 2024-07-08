@@ -94,6 +94,12 @@ class GraphProcessor(
             }
         }
 
+        steps += GraphProcessingStep(mapOf
+            (StepSize.BIG to n - 1,
+            StepSize.MEDIUM to currentMediumIndex,
+            StepSize.SMALL to currentSmallIndex)
+        ) {}
+
         return GraphProcessorRunner(steps)
     }
 

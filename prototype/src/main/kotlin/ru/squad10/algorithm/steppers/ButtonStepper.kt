@@ -6,11 +6,11 @@ import ru.squad10.algorithm.GraphProcessorRunner
 import ru.squad10.algorithm.StepSize
 import ru.squad10.log.Logger
 
-class ButtonStepper(
+class ButtonStepper (
     private val button: Button,
     private val graphProcessorRunner: GraphProcessorRunner
-)  {
-    fun start() {
+) : Stepper{
+    override fun start() {
         button.setOnMouseClicked {
             try {
                 AlgoApp.logger.log(Logger.Level.INFO, "Совершён малый шаг в ручном режиме")
@@ -22,7 +22,11 @@ class ButtonStepper(
 
         graphProcessorRunner.isFinishedReadonly.addListener {_, _, value ->
             if(value)
-                button.setOnMouseClicked {  }
+                stop()
         }
+    }
+
+    override fun stop() {
+        button.setOnMouseClicked {  }
     }
 }
