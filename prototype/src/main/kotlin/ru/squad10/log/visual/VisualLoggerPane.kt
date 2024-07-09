@@ -15,6 +15,11 @@ class VisualLoggerPane : ScrollPane() {
             """
                 -fx-font-family: "Consolas";
             """.trimIndent()
+        vbox.heightProperty().addListener { _, _, _ ->
+            Platform.runLater {
+                vvalue = 1.0
+            }
+        }
     }
 
     fun addLog(level: Logger.Level, message: String) {
@@ -26,8 +31,5 @@ class VisualLoggerPane : ScrollPane() {
             }
             style = """-fx-text-fill: $color"""
         })
-        Platform.runLater{
-            vvalue = 1.0
-        }
     }
 }
