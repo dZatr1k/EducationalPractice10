@@ -58,6 +58,11 @@ class GraphRepresentation {
                 stepper = DefaultStepper(currentGraphProcessorRunner!!)
             }
             LaunchType.AUTO -> {
+                if(matrixPane.getAutomaticStepDelayInMills() == 0L){
+                    visualizationState.set(LaunchType.DEFAULT)
+                    changeAlgorithmMode()
+                    return
+                }
                 AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм запустился в автоматическом режиме визуализации")
                 stepper = AutoStepper(Duration.ofMillis(matrixPane.getAutomaticStepDelayInMills()), currentGraphProcessorRunner!!)
             }
@@ -78,7 +83,9 @@ class GraphRepresentation {
             currentGraphProcessorRunner = null
             stepper = null
             isRunning.set(false)
-            AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм был остановлен.")
+            Platform.runLater {
+                AlgoApp.logger.log(Logger.Level.INFO, "Алгоритм был остановлен.")
+            }
         }
     }
 

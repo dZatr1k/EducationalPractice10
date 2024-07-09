@@ -259,8 +259,6 @@ class MatrixIOPane(private val representation: GraphRepresentation,
             promptText = "Кол-во ребер"
         }
 
-        buttonStop.isDisable = true
-
         buttonStart.disableProperty().bind(representation.isRunning())
         buttonLoadGraph.disableProperty().bind(representation.isRunning())
         buttonGenerateGraph.disableProperty().bind(representation.isRunning())
@@ -312,7 +310,7 @@ class MatrixIOPane(private val representation: GraphRepresentation,
             dim, representation.isRunning())
         buttonAddElement.disableProperty().bind(addBinding)
 
-        val visModelAutoTimeSelector = Slider(1.0, 5.0, 1.0)
+        val visModelAutoTimeSelector = Slider(.0, 5.0, 1.0)
         visModelAutoTimeSelector.blockIncrement = 0.01
         visModelAutoTimeSelector.valueProperty().addListener { _, _, cur ->
             autoVisualizationDelayInMills = (1000 * cur.toDouble()).toLong()
@@ -334,11 +332,12 @@ class MatrixIOPane(private val representation: GraphRepresentation,
             bigStepButton,
         )
 
+        buttonStop.disableProperty().bind(Bindings.createBooleanBinding({!representation.isRunning().value},representation.isRunning()))
+
         buttonAddElement.setOnMouseClicked { addElement() }
         buttonRemoveElement.setOnMouseClicked { removeElement() }
         buttonStart.setOnMouseClicked {
             AlgoApp.logger.log(Logger.Level.INFO, "Запуск алгоритма")
-            buttonStop.isDisable = false
             representation.applyAlgorithm()
         }
         buttonStop.setOnMouseClicked {
