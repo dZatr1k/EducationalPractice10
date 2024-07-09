@@ -230,6 +230,10 @@ class MatrixIOPane(private val representation: GraphRepresentation,
         labels[fromIndex to toIndex]!!.style = null
     }
 
+//    fun setCheckBoxMainVertexColor(vertex: Vertex){
+//
+//    }
+
     fun getAutomaticStepDelayInMills(): Long{
         return autoVisualizationDelayInMills
     }

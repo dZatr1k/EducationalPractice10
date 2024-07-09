@@ -46,7 +46,7 @@ class AlgoApp : Application() {
 
         val scene = Scene(mainSplitPane)
         primaryStage.scene = scene
-        primaryStage.title = "prototype"
+        primaryStage.title = "Worshall's algorithm"
         primaryStage.height = 500.0
         primaryStage.width = 1000.0
         primaryStage.show()
