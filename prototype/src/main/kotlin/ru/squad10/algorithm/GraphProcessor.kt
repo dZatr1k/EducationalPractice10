@@ -57,6 +57,7 @@ class GraphProcessor(
                         inker.resetStyleForOldVertexes()
                         inker.resetLablesStyle()
                         inker.resetCheckboxesStyle()
+
                         inker.colorVertexes(vertices[k], vertices[i], vertices[j])
                         inker.colorMainLabels(k+1, k+1)
                         inker.colorFormativeLabels(i+1, j+1)
@@ -65,9 +66,6 @@ class GraphProcessor(
                             AlgoApp.logger.log(Logger.Level.INFO, "Рассматриваются вершины ${vertices[i]}, ${vertices[k]}, ${vertices[j]} и рёбра ${vertices[i]}->${vertices[k]}, ${vertices[k]}->${vertices[j]}")
                         }
                         if (adjacencyMatrix[i][k] && adjacencyMatrix[k][j]) {
-                            Platform.runLater{
-                                inker.colorFormativeEdges(firstFormativeEdge, secondFormativeEdge)
-                            }
                             val newEdge = Edge(vertices[i], vertices[j])
                             if(graphProperty.get().edges.contains(newEdge))
                                 return@GraphProcessingStep
@@ -83,6 +81,9 @@ class GraphProcessor(
                             }
                             checkboxes[i to j]!!.isSelected = true
                             inker.colorNewCheckBox(i, j)
+                            Platform.runLater{
+                                inker.colorFormativeEdges(firstFormativeEdge, secondFormativeEdge)
+                            }
                         }
                     }
                     utilizedMediumLoop = true
