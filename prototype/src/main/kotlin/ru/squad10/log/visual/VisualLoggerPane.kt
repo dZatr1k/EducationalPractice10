@@ -1,5 +1,6 @@
 package ru.squad10.log.visual
 
+import javafx.application.Platform
 import javafx.scene.control.Label
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.VBox
@@ -25,6 +26,8 @@ class VisualLoggerPane : ScrollPane() {
             }
             style = """-fx-text-fill: $color"""
         })
-        vvalue = 1.0
+        Platform.runLater{
+            vvalue = 1.0
+        }
     }
 }
